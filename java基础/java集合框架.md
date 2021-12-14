@@ -3,6 +3,10 @@ java集合框架
 
 分为Collection接口和Map接口；
 
+![集合框架图](assets/集合框架图.png)
+
+>  List接口下的集合ArrayList，LinkedList，Vector，CopyOnWriteArrayList
+
 #### ArrayList
 
 1. List接口下的一个实现，使用数组存储
@@ -56,15 +60,13 @@ CopyOnWriteArrayList适合使用在读操作远远大于写操作的场景里，
 
 继承自List<E>, RandomAccess, Cloneable, java.io.Serializable
 
-### Map
-
-#### HashMap
-
 
 
 #### Set
 
 Set是个接口，继承自collection，iterable，
+
+> set接口下有HashSet，TreeSet
 
 ##### HashSet
 
@@ -76,7 +78,11 @@ Set是个接口，继承自collection，iterable，
 
 #### Queue
 
+![queue接口的实现类](assets/queue接口的实现类.png)
+
 queue继承collection,iterable,
+
+> Queue接口下有Deque(双端队列)，BlockingQueue(阻塞队列)，AbstractQueue(非阻塞队列)
 
 接口queue中的方法:
 
@@ -88,25 +94,39 @@ add,offer,remove,poll,element，peek，都是抽象方法，需要子类去实�
 
 接口deque中的方法：
 
-```
+```java
 除了collection，Queue接口上继承的方法，还有自己针对双链表操作的方法，addFirst，addLast，offerFirst，offerLast，removeFirst，removeLast，pollFirst，pollLast，getFirst，getLast，peekFirst，peekLast，removeFirstOccurrence，removeLastOccurrence，descendingIterator，push，pop
 ```
 
+### Map
+
+> Map接口下有HashMap（HashMap下面还有LinkedHashMap，ConcurrentHashMap，weakHashMap等等）,TreeMap, HashTable
+
+#### HashMap
+
+
+
+#### TreeMap
+
+基于红黑树实现。
+
 #####  Collection 和 Collections 有什么区别？
+
+1、**java.util.Collection 是一个集合接口**。它提供了对集合对象进行基本操作的通用接口方法。Collection接口在Java 类库中有很多具体的实现。Collection接口的意义是为各种具体的集合提供了最大化的统一操作方式。List，Set，Queue接口都继承Collection。直接实现该接口的类只有AbstractCollection类，该类也只是一个抽象类，提供了对集合类操作的一些基本实现。List和Set的具体实现类基本上都直接或间接的继承了该类。
+
+2、**java.util.Collections 是一个包装类**。它包含有各种有关集合操作的静态方法（对集合的搜索、排序、线程安全化等），大多数方法都是用来处理线性表的。此类不能实例化，就像一个工具类，常用的方法有**sort**(对集合进行排序)，**shuffle**(随机生成一个排序)，**binarySearch**（查找指定集合中的元素，返回所查找元素的索引），**replaceAll**(将所有指定的元素进行替换)，**reverse**(反转集合中元素的顺序)，**copy**（将集合m中的元素复制到集合n），**fill**（将集合中所有元素替换为给定那个元素）
 
 ##### 21.HashMap 和 Hashtable 有什么区别？
 
+HashMap允许键和值是null，而Hashtable则不允许键或者值是null。
+
+Hashtable是同步的，也就是线程安全的，而HashMap不是，所以**HashMap更适用于单线程环境，Hashtable则适用于多线程环境**
+
 ##### 22.如何决定使用 HashMap 还是 TreeMap？
-
-##### 23.说一下 HashMap 的实现原理？
-
-##### 24.说一下 HashSet 的实现原理？
 
 ##### 25.ArrayList 和 LinkedList 的区别是什么？
 
 ##### 26.如何实现数组和 List 之间的转换？
-
-##### 27.ArrayList 和 Vector 的区别是什么？
 
 ##### 28.Array 和 ArrayList 有何区别？
 
@@ -135,6 +155,8 @@ final关键字可以修饰类，方法，成员变量，final修饰的类不能�
 Collections.unmodifiableList(List)
 Collections.unmodifiableSet(Set)
 
-##### ArrayList、LinkedList底层？
 
-##### hashmap底层？concurrenthashmap底层？
+
+##### asList的缺陷
+
+[asList](http://wiki.jikexueyuan.com/project/java-enhancement/java-thirtysix.html)

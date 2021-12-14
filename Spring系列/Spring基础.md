@@ -1,6 +1,6 @@
 ### Spring基础
 
-1. Spring boot的作用
+1. Spring boot的作用,启动流程
 2. Spring boot几种创建方法
 3. application.properties的位置
 4. yaml文件配置过程

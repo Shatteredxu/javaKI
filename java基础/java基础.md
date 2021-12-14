@@ -95,6 +95,8 @@ StringBuffer 和 StringBuilder 类的对象能够被多次的修改，并且不�
 
 10、接口可继承接口，并可多继承接口，但类只能单根继承
 
+
+
 ### 8. 普通类和抽象类有哪些区别？
 
 · 抽象类不能被实例化
@@ -288,4 +290,51 @@ https://www.jianshu.com/p/5b800057f2d8
 2. JShell交互式编程环境
 
 3. 改进的 Stream API
+
+### 19.深拷贝和浅拷贝
+
+细读：https://www.cnblogs.com/ysocean/p/8482979.html
+
+总结：主要从下面几个方面回答：
+
+1. **浅拷贝就是**先创建一个新对象，然后将当前对象的非静态字段复制到该新对象，如果字段是值类型的，那么对该字段执行复制；如果该字段是引用类型的话，则复制引用但不复制引用的对象。因此，原始对象及其副本引用同一个对象。
+
+2. **深拷贝就是** 创建一个新对象，然后将当前对象的非静态字段复制到该新对象，无论该字段是值类型的还是引用类型，都复制独立的一份。当你修改其中一个对象的任何内容时，都不会影响另一个对象的内容。
+
+3. **如何更好的实现深拷贝？**1. 让每个引用类型属性内部都重写clone() 方法2. 利用对象的序列化产生克隆对象，然后通过反序列化获取这个对象（不需要序列化的属性，将其声明为 **transient**，即将其排除在克隆属性之外）3. Effective Java 书上讲到，最好不要去使用 clone()，可以使用**拷贝构造函数或者拷贝工厂来拷贝一个对象**，就像下面这个：
+
+   ```java
+   public class CloneConstructorExample {
+   
+       private int[] arr;
+   
+       public CloneConstructorExample() {
+           arr = new int[10];
+           for (int i = 0; i < arr.length; i++) {
+               arr[i] = i;
+           }
+       }
+       public CloneConstructorExample(CloneConstructorExample original) {//通过另外的构造方法，来实现深拷贝
+           arr = new int[original.arr.length];
+           for (int i = 0; i < original.arr.length; i++) {
+               arr[i] = original.arr[i];//依次进行赋值
+           }
+       }
+       public void set(int index, int value) {
+           arr[index] = value;
+       }
+       public int get(int index) {
+           return arr[index];
+       }
+   }
+   CloneConstructorExample e1 = new CloneConstructorExample();
+   CloneConstructorExample e2 = new CloneConstructorExample(e1);
+   e1.set(2, 222);//e1更改了，下面的e2没改
+   System.out.println(e2.get(2)); // 2
+   ```
+
+
+### 20.new Integer(123) 与 Integer.valueOf(123) 区别？
+
+### 21.java中的类型转换
 

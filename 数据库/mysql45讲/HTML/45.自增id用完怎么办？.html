@@ -1,0 +1,552 @@
+
+<!DOCTYPE html>
+<html>
+
+        <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover" />
+                <meta name="format-detection" content="telephone=no" />
+                <title>45 | 自增id用完怎么办？</title>
+                <link href="https://static001.geekbang.org/static/time/css/app.05ce99d672894caca1d424d02f4e6216.css" rel="stylesheet" />
+                <style type="text/css">.button-cancel[data-v-a6a58a5e]{color:#888;border:1px solid #888;border-radius:3px;margin-right:12px}.button-cancel[data-v-a6a58a5e],.button-primary[data-v-a6a58a5e]{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;height:35px;display:inline-block;font-size:15px;text-align:center;line-height:36px}.button-primary[data-v-a6a58a5e]{color:#fff;background-color:#ff5a05;border-radius:3px}.wrapper[data-v-a6a58a5e]{max-width:46.25rem;margin:0 auto;background-color:#f5f5f5}.banner[data-v-a6a58a5e]{width:100%;background-color:#eee}.banner .slider-item[data-v-a6a58a5e]{width:100%;position:relative}.banner .slider-item .slider-item-image[data-v-a6a58a5e]{width:100%}.banner .slider-item .slider-item-info[data-v-a6a58a5e]{position:absolute;width:100%;background-image:-webkit-gradient(linear,left bottom,left top,from(#000),to(transparent));background-image:linear-gradient(0deg,#000,transparent);bottom:0}.banner .slider-item .slider-item-title[data-v-a6a58a5e]{color:#fff;font-size:18px;padding-left:22px}.banner .slider-item .slider-item-desc[data-v-a6a58a5e]{color:#d9d9d9;font-size:12.5px;padding-top:4px;padding-left:21px;margin-bottom:11px}.filter[data-v-a6a58a5e]{padding-left:16px;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;background-color:#f5f5f5}.filter .filter-control .filter-control-order[data-v-a6a58a5e],.filter .filter-control[data-v-a6a58a5e],.filter[data-v-a6a58a5e]{height:29px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.filter .filter-control .filter-control-order[data-v-a6a58a5e]{cursor:pointer}.filter .filter-control .filter-control-order .icon-asc[data-v-a6a58a5e],.filter .filter-control .filter-control-order .icon-desc[data-v-a6a58a5e]{width:12px;height:12px;margin-right:7px}.filter .filter-control .filter-control-order .filter-control-text[data-v-a6a58a5e]{color:#888;font-size:11px}.filter .filter-control .filter-total[data-v-a6a58a5e]{color:#888;font-size:11px;margin-left:8px;padding-left:8px;border-left-width:1px;border-left-color:#d9d9d9;border-left-style:solid}.content-list[data-v-a6a58a5e]{background-color:#f5f5f5}.content-list .contentlistwrap[data-v-a6a58a5e]{padding-bottom:67px}@media (max-width:769px){.page-article-list .breadcrumb[data-v-a6a58a5e]{padding:10px}}</style>
+                <style type="text/css">.empty{height:51px}.mobile-tips{width:100%;height:51px;background:rgba(0,0,0,.8);position:fixed;top:0;left:0;z-index:20;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;-webkit-box-sizing:border-box;box-sizing:border-box;padding:0 12px;-webkit-transition:opacity .35s;transition:opacity .35s;opacity:0;pointer-events:none}.mobile-tips.istop{opacity:1;pointer-events:auto}.mobile-tips .mobile-tips-info{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start}.mobile-tips .mobile-tips-info i{width:36px;height:36px;background-image:url(data:image/png;base64,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);background-position:0 0;background-repeat:no-repeat;background-size:contain;border-radius:7px}.mobile-tips .mobile-tips-info h2{font-size:15px;color:#fff;font-weight:400;margin-left:6px}.mobile-tips .mobile-tips-info h2 span{font-size:11px}.mobile-tips a{width:72px;height:31px;text-align:center;border:1px solid #ff5a05;border-radius:3px;font-size:13px;color:#ff5a05;line-height:31px}</style>
+                <style type="text/css">.bottom{width:100%;background-color:#f5f5f5;position:fixed;bottom:0;left:0;z-index:10}.bottom,.bottom .bottom-wrapper{height:67px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row}.bottom .bottom-wrapper{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;padding-left:20px;padding-right:20px;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.bottom .bottom-wrapper a{height:48px;line-height:51px;-webkit-box-sizing:border-box;box-sizing:border-box}</style>
+                <style type="text/css">.article-item{cursor:pointer;padding-top:15px;padding-left:12px;padding-right:12px;margin-bottom:9px;background-color:#fff;position:relative}.article-item-flag-trial{width:14px;height:31px;position:absolute;top:0;right:12px}.article-item-title{font-size:17px;color:#353535;font-weight:400}.article-item-title.pad-right{padding-right:14px}.article-item-hd{-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start}.article-item-view{font-size:9px;color:#ff5a05;-webkit-transform:scale(.875);transform:scale(.875)}.article-item-viewed{font-size:9px;color:#888}.article-item-time{font-size:11px;color:#888;margin-left:9px}.article-item-cover{width:100%;margin-top:10px;margin-bottom:10px}.article-item-desc{color:#888;font-size:12.5px;line-height:19px;padding-bottom:14px}.article-item-more{padding-top:14px;padding-bottom:15px;border-top-color:#e8e8e8;border-top-width:1px;border-top-style:solid;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.article-item-more-text{color:#353535;font-size:12.5px}</style>
+                <style type="text/css">.breadcrumb{padding:30px 0;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-ms-flex-wrap:wrap;flex-wrap:wrap;background:#fff}.breadcrumb a.title{color:#e57c39;font-size:15px;font-weight:400}.breadcrumb span.title{color:#888;font-size:15px;font-weight:400}.breadcrumb .split{color:#ccc;font-size:10px;margin-right:5px}</style>
+                <style type="text/css">.hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}</style>
+                <style type="text/css">#iv-container{position:fixed;background:#0d0d0d;width:100%;height:100%;top:0;left:0;display:none;z-index:1000}.iv-container{overflow:hidden}.iv-close{width:26px;height:26px;position:absolute;right:20px;top:20px;cursor:pointer;text-align:center;overflow:hidden;text-shadow:0 0 3px #6d6d6d;-webkit-transition:all .2s ease;-moz-transition:all ease .2s;-o-transition:all ease .2s;transition:all .2s ease}.iv-close:after,.iv-close:before{content:"";height:2px;width:26px;background:#fff;position:absolute;left:0;top:50%;margin-top:-2px;border-radius:2px}.iv-close:before{-webkit-transform:rotate(45deg);-moz-transform:rotate(45deg);-ms-transform:rotate(45deg);-o-transform:rotate(45deg);transform:rotate(45deg)}.iv-close:after{-webkit-transform:rotate(-45deg);-moz-transform:rotate(-45deg);-ms-transform:rotate(-45deg);-o-transform:rotate(-45deg);transform:rotate(-45deg)}.iv-close:hover{-webkit-transform:rotate(90deg);-moz-transform:rotate(90deg);-ms-transform:rotate(90deg);-o-transform:rotate(90deg);transform:rotate(90deg)}.iv-image-view{position:absolute;height:100%;width:100%}.iv-image-wrap{display:inline-block}.iv-image-wrap:active{cursor:move}.iv-large-image{cursor:move;max-width:100%;max-height:100%;background-color:#ececec;-moz-transform:translateZ(0);-o-transform:translateZ(0)}.iv-large-image,.iv-loader{position:absolute;-webkit-transform:translateZ(0);-ms-transform:translateZ(0);transform:translateZ(0)}.iv-loader{top:50%;left:50%;border-radius:50%;width:32px;height:32px;z-index:100;margin-top:-16px;margin-left:-16px;font-size:5px;text-indent:-9999em;border-top:1em solid hsla(0,0%,100%,.2);border-right:1em solid hsla(0,0%,100%,.2);border-bottom:1em solid hsla(0,0%,100%,.2);border-left:1em solid #fff;-webkit-animation:load8 1.1s infinite linear;animation:load8 1.1s infinite linear}.iv-loader:after{width:10em;height:10em;border-radius:50%}@-webkit-keyframes load8{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(1turn);transform:rotate(1turn)}}@keyframes load8{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(1turn);transform:rotate(1turn)}}</style>
+                <style type="text/css">.vue-pull-to-wrapper[data-v-12abd9fb]{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;flex-direction:column;height:100%}.scroll-container[data-v-12abd9fb]{-webkit-box-flex:1;-webkit-flex:1;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}.vue-pull-to-wrapper .action-block[data-v-12abd9fb]{position:relative;width:100%}.default-text[data-v-12abd9fb]{height:100%;line-height:50px;text-align:center}</style>
+                <style type="text/css">.button-cancel[data-v-87ffcada]{color:#888;border:1px solid #888;border-radius:3px;margin-right:12px}.button-cancel[data-v-87ffcada],.button-primary[data-v-87ffcada]{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;height:35px;display:inline-block;font-size:15px;text-align:center;line-height:36px}.button-primary[data-v-87ffcada]{color:#fff;background-color:#ff5a05;border-radius:3px}.pd[data-v-87ffcada]{padding-left:1.375rem;padding-right:1.375rem}.article[data-v-87ffcada]{max-width:46.25rem;margin:0 auto}.article .article-unavailable[data-v-87ffcada]{color:#fa8919;font-size:15px;font-weight:600;line-height:24px;border-radius:5px;padding:12px;background-color:#f6f7fb;margin-top:20px}.article .article-unavailable .iconfont[data-v-87ffcada]{font-size:12px}.article .main[data-v-87ffcada]{padding:1.25rem 0;margin-bottom:52px}.article-title[data-v-87ffcada]{color:#353535;font-weight:400;line-height:1.65rem;font-size:1.34375rem}.article-info[data-v-87ffcada]{color:#888;font-size:.9375rem;margin-top:1.0625rem}.article-content[data-v-87ffcada]{margin-top:1.0625rem}.article-content.android video[data-v-87ffcada]::-webkit-media-controls-fullscreen-button{display:none}.copyright[data-v-87ffcada]{color:#b2b2b2;padding-bottom:20px;margin-top:20px;font-size:13px}.audio-player[data-v-87ffcada]{width:100%;margin:20px 0}.to-comment[data-v-87ffcada]{overflow:hidden;padding-top:10px;margin-bottom:-30px}.to-comment a.button-primary[data-v-87ffcada]{float:right;height:20px;font-size:12px;line-height:20px;padding:4px 8px;cursor:pointer}.article-comments[data-v-87ffcada]{margin-top:2rem}.article-comments h2[data-v-87ffcada]{text-align:center;color:#888;position:relative;z-index:1;margin-bottom:1rem}.article-comments h2[data-v-87ffcada]:before{border-top:1px dotted #888;content:"";position:absolute;top:56%;left:0;width:100%;z-index:-1}.article-comments h2 span[data-v-87ffcada]{font-size:15.25px;font-weight:400;padding:0 1rem;background:#fff;display:inline-block}.article-sub-bottom[data-v-87ffcada]{z-index:10;cursor:pointer}.switch-btns[data-v-87ffcada]{height:76px;cursor:pointer;padding-top:24px;padding-bottom:24px;border-bottom:10px solid #f6f7fb;position:relative}.switch-btns[data-v-87ffcada]:before{content:" ";height:1px;background:#e8e8e8;position:absolute;top:0;left:0;-webkit-box-sizing:border-box;box-sizing:border-box;left:1.375rem;right:1.375rem}.switch-btns .btn[data-v-87ffcada]{height:38px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.switch-btns .btn .tag[data-v-87ffcada]{-webkit-box-flex:0;-ms-flex:0 0 62px;flex:0 0 62px;text-align:center;color:#888;font-size:14px;border-radius:10px;height:22px;line-height:22px;background:#f6f7fb;font-weight:400}.switch-btns .btn .txt[data-v-87ffcada]{margin-left:10px;-webkit-box-flex:1;-ms-flex:1 1 auto;flex:1 1 auto;color:#888;font-size:15px;height:22px;line-height:22px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:400}@media (max-width:769px){.article .breadcrumb[data-v-87ffcada]{padding-top:10px;padding-bottom:10px}}</style>
+                <style type="text/css">.share-poster-wrapper{position:fixed;background-color:#fff;left:0;bottom:0;z-index:100;display:-webkit-box;display:-ms-flexbox;display:flex;overflow:hidden;width:100%;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-moz-user-select:-moz-none;-webkit-user-select:none;-ms-user-select:none;user-select:none}.share-poster-wrapper .poster-bottom,.share-poster-wrapper .poster-middle,.share-poster-wrapper .poster-top{-ms-flex-negative:0;flex-shrink:0}.share-poster-wrapper .poster-middle{padding:16px 32px;-webkit-box-sizing:border-box;box-sizing:border-box}.share-poster-wrapper .poster-middle .poster-userinfo{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;padding-bottom:18px}.share-poster-wrapper .poster-middle .poster-userinfo .poster-avatar{min-width:45px;min-height:45px;width:7vw;height:7vw;border-radius:50%;-ms-flex-negative:0;flex-shrink:0}.share-poster-wrapper .poster-middle .nickname{font-size:5vw;font-weight:400;margin-left:18px}.share-poster-wrapper .poster-middle .time{font-size:3.2vw}.share-poster-wrapper .poster-middle .poster-middle-content{font-size:4vw;font-weight:400;white-space:normal;word-wrap:break-word;word-break:break-word;letter-spacing:1px}.share-poster-wrapper .poster-middle .poster-middle-content p{margin-bottom:22px}.share-poster-wrapper .poster-middle .quote-content{font-size:3.7vw;padding:32px 0}.share-poster-wrapper .poster-middle .quote-content p{margin-bottom:22px}.share-poster-wrapper .poster-middle .quote-info{border-left:1px solid #000;padding-left:10px;margin-top:38px}.share-poster-wrapper .poster-middle .quote-info p{font-size:3.2vw;line-height:1.5}.share-poster-wrapper.theme0 .poster-top{width:100%;height:25px;margin-top:27px;background:url("https://static001.geekbang.org/static/time/page/img/sharePoster/theme1/top.png") no-repeat 15px 1px}.share-poster-wrapper.theme0 .poster-middle{width:100%;padding-left:56px;padding-right:56px;background-image:url("https://static001.geekbang.org/static/time/page/img/sharePoster/theme1/middle.png");background-repeat:repeat-y;background-position:15px 0}.share-poster-wrapper.theme0 .poster-middle .time{margin-bottom:45px}.share-poster-wrapper.theme0 .poster-middle .quote-content{border-top:1px solid #e3e1dc;margin-top:30px}.share-poster-wrapper.theme0 .poster-bottom{width:100%;height:25px;margin-bottom:27px;background:url("https://static001.geekbang.org/static/time/page/img/sharePoster/theme1/bottom.png") no-repeat 15px -10px}.share-poster-wrapper.theme1 .poster-top{width:100%;height:25px;margin-top:27px;background:url("https://static001.geekbang.org/static/time/page/img/sharePoster/theme0/top.png") no-repeat 38px 1px}.share-poster-wrapper.theme1 .poster-middle{width:100%;padding:0 42px 10px;background:url("https://static001.geekbang.org/static/time/page/img/sharePoster/theme0/middle.png") repeat-y 38px 0}.share-poster-wrapper.theme1 .poster-middle .poster-userinfo{border-bottom:1px solid #b5a899}.share-poster-wrapper.theme1 .poster-middle .poster-userinfo .poster-avatar{margin-left:38px}.share-poster-wrapper.theme1 .poster-middle .poster-middle-wrapper{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;min-height:260px;border-bottom:1px solid #b5a899}.share-poster-wrapper.theme1 .poster-middle .time{max-width:65px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;text-align:center;vertical-align:middle;border-right:1px solid #b5a899}.share-poster-wrapper.theme1 .poster-middle .time span{white-space:nowrap;-webkit-transform:rotate(90deg);transform:rotate(90deg)}.share-poster-wrapper.theme1 .poster-middle .poster-middle-content{padding:30px}.share-poster-wrapper.theme1 .poster-middle .quote-content{font-size:3.7vw;margin-left:36px;margin-right:36px}.share-poster-wrapper.theme1 .poster-middle .quote-info{margin-left:36px;margin-right:36px}.share-poster-wrapper.theme1 .poster-middle .footer{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;margin-right:30px}.share-poster-wrapper.theme1 .poster-bottom{width:100%;height:25px;margin-bottom:27px;background:url("https://static001.geekbang.org/static/time/page/img/sharePoster/theme0/bottom.png") no-repeat 38px -10px}.share-poster-wrapper .share-poster{background:#fefdf8;-webkit-box-sizing:border-box;box-sizing:border-box;color:#9b8d73;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;overflow:auto;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-overflow-scrolling:touch;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.share-poster-wrapper .share-poster.color0{background-color:#fefdf8}.share-poster-wrapper .share-poster.color1{background-color:#4d4d4d}.share-poster-wrapper .share-poster .footer{margin-top:2rem;position:relative;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.share-poster-wrapper .share-poster .footer p{margin:0;line-height:1.4;margin-left:20px;text-align:right;padding-right:20px}.share-poster-wrapper .controls{background:#fff;border-top:1px solid #f5f5f5;width:100%;padding-top:5px;-webkit-box-shadow:0 -4px 10px 0 rgba(0,0,0,.1);box-shadow:0 -4px 10px 0 rgba(0,0,0,.1);z-index:1;-ms-flex-negative:0;flex-shrink:0}.share-poster-wrapper .controls>div{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;padding:10px 0}.share-poster-wrapper .controls>div span{font-size:.85rem}.share-poster-wrapper .controls>div button{width:100px;height:24px;background:#eee;margin:0 10px;border-radius:5px;border:2px solid #b2b2b2;outline:none}.share-poster-wrapper .controls>div button.on{border:2px solid #ff5a05}.share-poster-wrapper .controls .controls-themes button{color:#b2b2b2;font-size:12px;background:#fff;text-align:center}.share-poster-wrapper .controls .controls-themes button.on{color:#ff5a05}.share-poster-wrapper .buttons{background:#fff;border-top:1px solid #f5f5f5;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-ms-flex-negative:0;flex-shrink:0}.share-poster-wrapper .buttons a{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;text-align:center;color:#000;font-weight:400;height:3rem;line-height:3rem}.share-poster-wrapper .buttons a .icon-share-money{width:1rem;height:1rem;margin:3px 0 0 5px}.share-poster-wrapper .buttons a:last-child{border-left:1px solid #f5f5f5}.share-poster-wrapper img{max-width:100%}.share-poster-wrapper.android .poster-middle .nickname{font-size:10vw}.share-poster-wrapper.android .poster-middle .time{font-size:6.4vw}.share-poster-wrapper.android .poster-middle .poster-middle-content{font-size:8vw}.share-poster-wrapper.android .poster-middle .quote-content{font-size:7.4vw}.share-poster-wrapper.android .poster-middle .quote-info p{font-size:6.4vw}</style>
+                <style type="text/css">.mini-audio-player{width:100%;height:5.25rem;border:1px solid #d9d9d9;background:#fafafa;-webkit-box-sizing:border-box;box-sizing:border-box;padding:1rem;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;margin:1rem 0}.mini-audio-player>a{border:none;-ms-flex-negative:0;flex-shrink:0}.mini-audio-player .btn-play{background-image:url(data:image/png;base64,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)}.mini-audio-player .btn-pause,.mini-audio-player .btn-play{width:2.6875rem;height:2.6875rem;background-repeat:no-repeat;background-position:0 0;background-size:contain;text-decoration:none}.mini-audio-player .btn-pause{background-image:url(data:image/png;base64,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)}.mini-audio-player .audio-info{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;margin-left:.6875rem;min-width:0}.mini-audio-player .audio-info h3{color:#353535;font-size:15.25px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mini-audio-player .audio-info p{margin:0;margin-top:.125rem;font-size:11px;line-height:1rem}.mini-audio-player .audio-info p span{color:#888}.mini-audio-player .btn-download{width:1.25rem;height:1.25rem;position:relative;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAA+CAYAAACbQR1vAAABS2lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMzggNzkuMTU5ODI0LCAyMDE2LzA5LzE0LTAxOjA5OjAxICAgICAgICAiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIi8+CiA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgo8P3hwYWNrZXQgZW5kPSJyIj8+IEmuOgAAA4hJREFUaIHtm8lOFFEUhr9qCWGHGxcaY1joK2h0YRzAtYmsWbAGGidEXOACbAYRxfgAPoEPoInGxJgg86gsJTHMw86EhS7O7TDk3uqq6qo6HahvQ7pOce7//1U0feve9vr6+lAiD3QC/4AC8FZDRJXGoMB14PWB1yPANPA1bSG5tAc0XLEcu5y6CvQCOGU5pnI3agVQMWQBaAvQJgtAW4A2WQDaArTJAtAWoE0WgLYAbbIAtAVokwWgLUCbLABtAdpkAfjU6oC7wKV0pCTCRcRDnesEVwDNwC/gg/nZHbeyFOgGltj30Gw7yRZALfAOqDavPeA50BO7xOToQTR75nU14qn26Im2AM4DNZbjz4DeePQlSi+i9Sg1iLdD2AJYApYdzbuo7BBeIBptLCPeDmELYA9oBHYdjbqQpaxKowA8ddR2gXuIt0O43gRHgTu4Q+ikskIoIJps7AINwA9b0e/fYJAQ1FZWD9CP2/wOUI/DPJT+IDRqGrhCeGIEaNEPdDhqO8iVH/NrEOST4BgSwo6j3gEMBOgTNwP4m6+nhHkI/lG4VAiPgcGAveJg0IxpYxvROh6kUZi5wLhpvO2oPyKdEF6asWyEMg/hJ0PjyN+VXwhDIXuGYQh46KhtIeYnwjSMMhss3glbjvoDkglhyPS2Eck8RJ8OTyB3gl8IryL2tjGM2/wmYn4ySuNyngdMmIE3HfX7iHDPUQ+CZ3q0O+qbyIWIZB7KfyAyaQS4QmhH7oQoIZQyv0EZV75IHE+EJvG/E9oJfyd4yC6yvKO+gQQ/FaKnlbgeiU0hIWw46nnEUJAQiubbHPV1M1bZ5iHeZ4KlQmgD3uAfgofsGfQz34DsKYyFuLemTSMhfATOWOqtiMk/llrRfIuj9zpwG5gtX+Y+SezNK4bwCXsILdgDaAXOOnomYh6Seyw+gwhed9TPWY75mb9FAuYh2XWBWUS4K4QgrAE3gblYFFlIemFkDjEQJYQ1JMD5WBUdIY2VoXkkhLUQv7NqfidR85De0liYEFaRK7+QqCJDmmuDC0gIqz7nrJhzUjEP6S+O+oWwglz5xTQFaawOLwI3gO8Hjo2ZY6maB72vzPwErgEXkO8MuVaiEkcrgCK/lcfPNkhkAWgL0KYKmZiMIG9Ktn0Bx5G/wDcgXwW8R6avJ41G4HQOufInlas5ZO5+UpnJAU3AFyy7J44xe8BnoOk/JruwYo92bigAAAAASUVORK5CYII=);background-repeat:no-repeat;background-position:0 0;background-size:contain;text-decoration:none;padding-right:.25rem}.mini-audio-player .btn-download .icon-download-done{width:.45rem;height:.45rem;position:absolute;bottom:0;right:0;display:inline-block;background-image:url(data:image/png;base64,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);background-repeat:no-repeat;background-position:0 0;background-size:contain}</style>
+                <style type="text/css">.MathJax_Display{overflow:auto}.poster{position:fixed;left:-10000px;top:-10000px;overflow:hidden;padding:1rem;background:#ececec}.richcontent-pre-copy{font-size:13px;color:#888;position:absolute;right:1em;top:.2em;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.richcontent-pre-copy .iconfont{font-size:12px;margin-right:.2em}</style>
+                <style type="text/css">.comment-item{list-style-position:inside;width:100%;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;margin-bottom:1rem}.comment-item a{border-bottom:none}.comment-item .avatar{width:2.625rem;height:2.625rem;-ms-flex-negative:0;flex-shrink:0;border-radius:50%}.comment-item .info{margin-left:.5rem;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1}.comment-item .info .hd{width:100%;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.comment-item .info .hd .username{color:#888;font-size:15.25px;font-weight:400;line-height:1.2}.comment-item .info .hd .control{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.comment-item .info .hd .control .btn-share{color:#888;font-size:.75rem;margin-right:1rem}.comment-item .info .hd .control .btn-praise{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-ms-flex-align:center;align-items:center;font-size:15.25px;text-decoration:none}.comment-item .info .hd .control .btn-praise i{color:#888;display:inline-block;font-size:.75rem;margin-right:.3rem;margin-top:-.01rem}.comment-item .info .hd .control .btn-praise i.on,.comment-item .info .hd .control .btn-praise span{color:#ff5a05}.comment-item .info .bd{color:#353535;font-size:15.25px;font-weight:400;white-space:normal;word-break:break-all;line-height:1.6}.comment-item .info .time{color:#888;font-size:9px;line-height:1}.comment-item .info .reply .reply-hd{font-size:15.25px}.comment-item .info .reply .reply-hd span{margin-left:-12px;color:#888;font-weight:400}.comment-item .info .reply .reply-hd i{color:#ff5a05;font-size:15.25px}.comment-item .info .reply .reply-content{color:#353535;font-size:15.25px;font-weight:400;white-space:normal;word-break:break-all}.comment-item .info .reply .reply-time{color:#888;font-size:9px}</style>
+               </head>
+  <body>
+      <div id=app>
+                     <div data-v-87ffcada="" class="article"> 
+                      <div data-v-87ffcada="" class="main main-app"> 
+                       <div data-v-87ffcada="" class="breadcrumb breadcrumb pd"> 
+                       </div> 
+                       <h1 data-v-87ffcada="" class="article-title pd"> 45 | 自增id用完怎么办？ </h1> 
+                       <div data-v-87ffcada="" class="article-info pd"> 
+                        <span data-v-87ffcada="">2019-02-25</span> 
+                        <span data-v-87ffcada="">林晓斌</span>
+                       </div> 
+                       <div data-v-87ffcada="" class="article-content typo common-content pd"> 
+                        <img data-v-87ffcada="" src="https://static001.geekbang.org/resource/image/a5/d8/a5741e569d6d9e9a27b1b38f967a22d8.jpg" /> 
+                        <div data-v-87ffcada="" id="article-content" class="">
+                         <div class="text"> 
+                             <p>MySQL里有很多自增的id，每个自增id都是定义了初始值，然后不停地往上加步长。虽然自然数是没有上限的，但是在计算机里，只要定义了表示这个数的字节长度，那它就有上限。比如，无符号整型(unsigned int)是4个字节，上限就是2<sup>32</sup>-1。</p><p>既然自增id有上限，就有可能被用完。但是，自增id用完了会怎么样呢？</p><p>今天这篇文章，我们就来看看MySQL里面的几种自增id，一起分析一下它们的值达到上限以后，会出现什么情况。</p><h1>表定义自增值id</h1><p>说到自增id，你第一个想到的应该就是表结构定义里的自增字段，也就是我在第39篇文章<a href="https://time.geekbang.org/column/article/80531">《自增主键为什么不是连续的？》</a>中和你介绍过的自增主键id。</p><p>表定义的自增值达到上限后的逻辑是：再申请下一个id时，得到的值保持不变。</p><p>我们可以通过下面这个语句序列验证一下：</p><pre><code>create table t(id int unsigned auto_increment primary key) auto_increment=4294967295;
+insert into t values(null);
+//成功插入一行 4294967295
+show create table t;
+/* CREATE TABLE `t` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4294967295;
+*/
+
+insert into t values(null);
+//Duplicate entry '4294967295' for key 'PRIMARY'
+</code></pre><p>可以看到，第一个insert语句插入数据成功后，这个表的AUTO_INCREMENT没有改变（还是4294967295），就导致了第二个insert语句又拿到相同的自增id值，再试图执行插入语句，报主键冲突错误。</p><p>2<sup>32</sup>-1（4294967295）不是一个特别大的数，对于一个频繁插入删除数据的表来说，是可能会被用完的。因此在建表的时候你需要考察你的表是否有可能达到这个上限，如果有可能，就应该创建成8个字节的bigint unsigned。</p><!-- [[[read_end]]] --><h1>InnoDB系统自增row_id</h1><p>如果你创建的InnoDB表没有指定主键，那么InnoDB会给你创建一个不可见的，长度为6个字节的row_id。InnoDB维护了一个全局的dict_sys.row_id值，所有无主键的InnoDB表，每插入一行数据，都将当前的dict_sys.row_id值作为要插入数据的row_id，然后把dict_sys.row_id的值加1。</p><p>实际上，在代码实现时row_id是一个长度为8字节的无符号长整型(bigint unsigned)。但是，InnoDB在设计时，给row_id留的只是6个字节的长度，这样写到数据表中时只放了最后6个字节，所以row_id能写到数据表中的值，就有两个特征：</p><ol>
+<li>
+<p>row_id写入表中的值范围，是从0到2<sup>48</sup>-1；</p>
+</li>
+<li>
+<p>当dict_sys.row_id=2<sup>48</sup>时，如果再有插入数据的行为要来申请row_id，拿到以后再取最后6个字节的话就是0。</p>
+</li>
+</ol><p>也就是说，写入表的row_id是从0开始到2<sup>48</sup>-1。达到上限后，下一个值就是0，然后继续循环。</p><p>当然，2<sup>48</sup>-1这个值本身已经很大了，但是如果一个MySQL实例跑得足够久的话，还是可能达到这个上限的。在InnoDB逻辑里，申请到row_id=N后，就将这行数据写入表中；如果表中已经存在row_id=N的行，新写入的行就会覆盖原有的行。</p><p>要验证这个结论的话，你可以通过gdb修改系统的自增row_id来实现。注意，用gdb改变量这个操作是为了便于我们复现问题，只能在测试环境使用。</p><p><img src="https://static001.geekbang.org/resource/image/6a/9a/6a7bfd460f9e75afcfcfc4a963339a9a.png" alt=""></p><center><span class="reference">图1 row_id用完的验证序列</span></center><p><img src="https://static001.geekbang.org/resource/image/5a/5c/5ad1fff81bda3a6b00ec84e84753fa5c.png" alt=""></p><center><span class="reference">图2 row_id用完的效果验证</span></center><p>可以看到，在我用gdb将dict_sys.row_id设置为2<sup>48</sup>之后，再插入的a=2的行会出现在表t的第一行，因为这个值的row_id=0。之后再插入的a=3的行，由于row_id=1，就覆盖了之前a=1的行，因为a=1这一行的row_id也是1。</p><p>从这个角度看，我们还是应该在InnoDB表中主动创建自增主键。因为，表自增id到达上限后，再插入数据时报主键冲突错误，是更能被接受的。</p><p>毕竟覆盖数据，就意味着数据丢失，影响的是数据可靠性；报主键冲突，是插入失败，影响的是可用性。而一般情况下，可靠性优先于可用性。</p><h1>Xid</h1><p>在第15篇文章<a href="https://time.geekbang.org/column/article/73161">《答疑文章（一）：日志和索引相关问题》</a>中，我和你介绍redo log和binlog相配合的时候，提到了它们有一个共同的字段叫作Xid。它在MySQL中是用来对应事务的。</p><p>那么，Xid在MySQL内部是怎么生成的呢？</p><p>MySQL内部维护了一个全局变量global_query_id，每次执行语句的时候将它赋值给Query_id，然后给这个变量加1。如果当前语句是这个事务执行的第一条语句，那么MySQL还会同时把Query_id赋值给这个事务的Xid。</p><p>而global_query_id是一个纯内存变量，重启之后就清零了。所以你就知道了，在同一个数据库实例中，不同事务的Xid也是有可能相同的。</p><p>但是MySQL重启之后会重新生成新的binlog文件，这就保证了，同一个binlog文件里，Xid一定是惟一的。</p><p>虽然MySQL重启不会导致同一个binlog里面出现两个相同的Xid，但是如果global_query_id达到上限后，就会继续从0开始计数。从理论上讲，还是就会出现同一个binlog里面出现相同Xid的场景。</p><p>因为global_query_id定义的长度是8个字节，这个自增值的上限是2<sup>64</sup>-1。要出现这种情况，必须是下面这样的过程：</p><ol>
+<li>
+<p>执行一个事务，假设Xid是A；</p>
+</li>
+<li>
+<p>接下来执行2<sup>64</sup>次查询语句，让global_query_id回到A；</p>
+</li>
+<li>
+<p>再启动一个事务，这个事务的Xid也是A。</p>
+</li>
+</ol><p>不过，2<sup>64</sup>这个值太大了，大到你可以认为这个可能性只会存在于理论上。</p><h1>Innodb trx_id</h1><p>Xid和InnoDB的trx_id是两个容易混淆的概念。</p><p>Xid是由server层维护的。InnoDB内部使用Xid，就是为了能够在InnoDB事务和server之间做关联。但是，InnoDB自己的trx_id，是另外维护的。</p><p>其实，你应该非常熟悉这个trx_id。它就是在我们在第8篇文章<a href="https://time.geekbang.org/column/article/70562">《事务到底是隔离的还是不隔离的？》</a>中讲事务可见性时，用到的事务id（transaction id）。</p><p>InnoDB内部维护了一个max_trx_id全局变量，每次需要申请一个新的trx_id时，就获得max_trx_id的当前值，然后并将max_trx_id加1。</p><p>InnoDB数据可见性的核心思想是：每一行数据都记录了更新它的trx_id，当一个事务读到一行数据的时候，判断这个数据是否可见的方法，就是通过事务的一致性视图与这行数据的trx_id做对比。</p><p>对于正在执行的事务，你可以从information_schema.innodb_trx表中看到事务的trx_id。</p><p>我在上一篇文章的末尾留给你的思考题，就是关于从innodb_trx表里面查到的trx_id的。现在，我们一起来看一个事务现场：</p><p><img src="https://static001.geekbang.org/resource/image/94/7c/94c704190f7609b3e6443688368cd97c.png" alt=""></p><center><span class="reference">图3 事务的trx_id</span></center><p>session B里，我从innodb_trx表里查出的这两个字段，第二个字段trx_mysql_thread_id就是线程id。显示线程id，是为了说明这两次查询看到的事务对应的线程id都是5，也就是session A所在的线程。</p><p>可以看到，T2时刻显示的trx_id是一个很大的数；T4时刻显示的trx_id是1289，看上去是一个比较正常的数字。这是什么原因呢？</p><p>实际上，在T1时刻，session A还没有涉及到更新，是一个只读事务。而对于只读事务，InnoDB并不会分配trx_id。也就是说：</p><ol>
+<li>
+<p>在T1时刻，trx_id的值其实就是0。而这个很大的数，只是显示用的。一会儿我会再和你说说这个数据的生成逻辑。</p>
+</li>
+<li>
+<p>直到session A 在T3时刻执行insert语句的时候，InnoDB才真正分配了trx_id。所以，T4时刻，session B查到的这个trx_id的值就是1289。</p>
+</li>
+</ol><p>需要注意的是，除了显而易见的修改类语句外，如果在select 语句后面加上for update，这个事务也不是只读事务。</p><p>在上一篇文章的评论区，有同学提出，实验的时候发现不止加1。这是因为：</p><ol>
+<li>
+<p>update 和 delete语句除了事务本身，还涉及到标记删除旧数据，也就是要把数据放到purge队列里等待后续物理删除，这个操作也会把max_trx_id+1， 因此在一个事务中至少加2；</p>
+</li>
+<li>
+<p>InnoDB的后台操作，比如表的索引信息统计这类操作，也是会启动内部事务的，因此你可能看到，trx_id值并不是按照加1递增的。</p>
+</li>
+</ol><p>那么，<strong>T2时刻查到的这个很大的数字是怎么来的呢？</strong></p><p>其实，这个数字是每次查询的时候由系统临时计算出来的。它的算法是：把当前事务的trx变量的指针地址转成整数，再加上2<sup>48</sup>。使用这个算法，就可以保证以下两点：</p><ol>
+<li>
+<p>因为同一个只读事务在执行期间，它的指针地址是不会变的，所以不论是在 innodb_trx还是在innodb_locks表里，同一个只读事务查出来的trx_id就会是一样的。</p>
+</li>
+<li>
+<p>如果有并行的多个只读事务，每个事务的trx变量的指针地址肯定不同。这样，不同的并发只读事务，查出来的trx_id就是不同的。</p>
+</li>
+</ol><p>那么，<strong>为什么还要再加上2<sup>48</sup>呢？</strong></p><p>在显示值里面加上2<sup>48</sup>，目的是要保证只读事务显示的trx_id值比较大，正常情况下就会区别于读写事务的id。但是，trx_id跟row_id的逻辑类似，定义长度也是8个字节。因此，在理论上还是可能出现一个读写事务与一个只读事务显示的trx_id相同的情况。不过这个概率很低，并且也没有什么实质危害，可以不管它。</p><p>另一个问题是，<strong>只读事务不分配trx_id，有什么好处呢？</strong></p><ul>
+<li>一个好处是，这样做可以减小事务视图里面活跃事务数组的大小。因为当前正在运行的只读事务，是不影响数据的可见性判断的。所以，在创建事务的一致性视图时，InnoDB就只需要拷贝读写事务的trx_id。</li>
+<li>另一个好处是，可以减少trx_id的申请次数。在InnoDB里，即使你只是执行一个普通的select语句，在执行过程中，也是要对应一个只读事务的。所以只读事务优化后，普通的查询语句不需要申请trx_id，就大大减少了并发事务申请trx_id的锁冲突。</li>
+</ul><p>由于只读事务不分配trx_id，一个自然而然的结果就是trx_id的增加速度变慢了。</p><p>但是，max_trx_id会持久化存储，重启也不会重置为0，那么从理论上讲，只要一个MySQL服务跑得足够久，就可能出现max_trx_id达到2<sup>48</sup>-1的上限，然后从0开始的情况。</p><p>当达到这个状态后，MySQL就会持续出现一个脏读的bug，我们来复现一下这个bug。</p><p>首先我们需要把当前的max_trx_id先修改成2<sup>48</sup>-1。注意：这个case里使用的是可重复读隔离级别。具体的操作流程如下：</p><p><img src="https://static001.geekbang.org/resource/image/13/c0/13735f955a437a848895787bf9c723c0.png" alt=""></p><center><span class="reference">图 4 复现脏读</span></center><p>由于我们已经把系统的max_trx_id设置成了2<sup>48</sup>-1，所以在session A启动的事务TA的低水位就是2<sup>48</sup>-1。</p><p>在T2时刻，session B执行第一条update语句的事务id就是2<sup>48</sup>-1，而第二条update语句的事务id就是0了，这条update语句执行后生成的数据版本上的trx_id就是0。</p><p>在T3时刻，session A执行select语句的时候，判断可见性发现，c=3这个数据版本的trx_id，小于事务TA的低水位，因此认为这个数据可见。</p><p>但，这个是脏读。</p><p>由于低水位值会持续增加，而事务id从0开始计数，就导致了系统在这个时刻之后，所有的查询都会出现脏读的。</p><p>并且，MySQL重启时max_trx_id也不会清0，也就是说重启MySQL，这个bug仍然存在。</p><p>那么，<strong>这个bug也是只存在于理论上吗？</strong></p><p>假设一个MySQL实例的TPS是每秒50万，持续这个压力的话，在17.8年后，就会出现这个情况。如果TPS更高，这个年限自然也就更短了。但是，从MySQL的真正开始流行到现在，恐怕都还没有实例跑到过这个上限。不过，这个bug是只要MySQL实例服务时间够长，就会必然出现的。</p><p>当然，这个例子更现实的意义是，可以加深我们对低水位和数据可见性的理解。你也可以借此机会再回顾下第8篇文章<a href="https://time.geekbang.org/column/article/70562">《事务到底是隔离的还是不隔离的？》</a>中的相关内容。</p><h1>thread_id</h1><p>接下来，我们再看看线程id（thread_id）。其实，线程id才是MySQL中最常见的一种自增id。平时我们在查各种现场的时候，show processlist里面的第一列，就是thread_id。</p><p>thread_id的逻辑很好理解：系统保存了一个全局变量thread_id_counter，每新建一个连接，就将thread_id_counter赋值给这个新连接的线程变量。</p><p>thread_id_counter定义的大小是4个字节，因此达到2<sup>32</sup>-1后，它就会重置为0，然后继续增加。但是，你不会在show processlist里看到两个相同的thread_id。</p><p>这，是因为MySQL设计了一个唯一数组的逻辑，给新线程分配thread_id的时候，逻辑代码是这样的：</p><pre><code>do {
+  new_id= thread_id_counter++;
+} while (!thread_ids.insert_unique(new_id).second);
+</code></pre><p>这个代码逻辑简单而且实现优雅，相信你一看就能明白。</p><h1>小结</h1><p>今天这篇文章，我给你介绍了MySQL不同的自增id达到上限以后的行为。数据库系统作为一个可能需要7*24小时全年无休的服务，考虑这些边界是非常有必要的。</p><p>每种自增id有各自的应用场景，在达到上限后的表现也不同：</p><ol>
+<li>
+<p>表的自增id达到上限后，再申请时它的值就不会改变，进而导致继续插入数据时报主键冲突的错误。</p>
+</li>
+<li>
+<p>row_id达到上限后，则会归0再重新递增，如果出现相同的row_id，后写的数据会覆盖之前的数据。</p>
+</li>
+<li>
+<p>Xid只需要不在同一个binlog文件中出现重复值即可。虽然理论上会出现重复值，但是概率极小，可以忽略不计。</p>
+</li>
+<li>
+<p>InnoDB的max_trx_id 递增值每次MySQL重启都会被保存起来，所以我们文章中提到的脏读的例子就是一个必现的bug，好在留给我们的时间还很充裕。</p>
+</li>
+<li>
+<p>thread_id是我们使用中最常见的，而且也是处理得最好的一个自增id逻辑了。</p>
+</li>
+</ol><p>当然，在MySQL里还有别的自增id，比如table_id、binlog文件序号等，就留给你去验证和探索了。</p><p>不同的自增id有不同的上限值，上限值的大小取决于声明的类型长度。而我们专栏声明的上限id就是45，所以今天这篇文章也是我们的最后一篇技术文章了。</p><p>既然没有下一个id了，课后也就没有思考题了。今天，我们换一个轻松的话题，请你来说说，读完专栏以后有什么感想吧。</p><p>这个“感想”，既可以是你读完专栏前后对某一些知识点的理解发生的变化，也可以是你积累的学习专栏文章的好方法，当然也可以是吐槽或者对未来的期望。</p><p>欢迎你给我留言，我们在评论区见，也欢迎你把这篇文章分享给更多的朋友一起阅读。</p><p><img src="https://static001.geekbang.org/resource/image/09/77/09c1073f99cf71d2fb162a716b5fa577.jpg" alt=""></p>
+                         </div>
+                        </div> 
+                       </div> 
+                       <!----> 
+                       <!---->
+                      </div>
+                      
+                      <div data-v-87ffcada="" class="article-comments pd">
+                            <h2 data-v-87ffcada="">
+                                <span data-v-87ffcada="">精选留言</span>
+                              </h2> 
+                              <ul data-v-87ffcada=""> 
+                                    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/account/avatar/00/14/13/cd/db3e4640.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">Continue</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>12</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        跟着学了三个多月，受益匪浅，学到了很多新的知识和其中的原理！
+        </div> 
+        <span class="time">2019-02-25</span> 
+                <div class="reply">
+                        <div class="reply-hd">
+                        <i class="iconfont"></i> 
+                        <span>作者回复</span>
+                        </div> 
+                        <p class="reply-content">早🤝</p> 
+                        <p class="reply-time">2019-02-25</p>
+                    </div>
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/account/avatar/00/14/33/4b/71905da9.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">克劳德</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>7</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        本人服务端工程师，在学习这门课之前数据库一直是我的短板，曾听朋友说MySQL或数据库中涉及了很多方面的知识点，每一个拿出来展开讲几乎都能出一本书了，对数据库是越来越忌惮，同时也因为工作上并没有过多接触，水平便一直停留在编写简单SQL层面。<br>在面试中被问到数据库问题，只能无奈的说这块不太清楚，也曾在网上自学过，但网上的文章知识点比较零散，很多都是给出一些结论性的观点，由于不了解其内部原理，记忆很难深刻。<br>老实说，当初报这门课的时候就像买技术书籍一样，我相信大家都有这样的体会，以为买到了就等于学到了，所以有一段时间没有点开看过，以至于后面开始学的时候都是在追赶老师和大家的进度，唯一遗憾的地方就是没能跟老师及时留言互动。<br>这门课虽然是文字授课，但字里行间给我的感觉就是很亲切很舒服，为什么呢，因为老师可以把晦涩的知识变得通俗易懂，有时我在思考，如果让我来讲一个自己擅长的领域是否也能做到这一点，如果要做到的话需要什么样的知识储备呢。<br>最后真要感谢老师的这门课，让我从心里不再惧怕数据库问题，不管是工作还是面试中信心倍增，现在时不时都敢和我们DBA“切磋切磋“了，哈哈。<br>祝好~
+        </div> 
+        <span class="time">2019-02-25</span> 
+                <div class="reply">
+                        <div class="reply-hd">
+                        <i class="iconfont"></i> 
+                        <span>作者回复</span>
+                        </div> 
+                        <p class="reply-content">👍“切磋切磋“<br><br>留言不会“过时”哈，在对应的章节下面提出相关的问题，我会持续关注评论区<br></p> 
+                        <p class="reply-time">2019-02-25</p>
+                    </div>
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="http://thirdwx.qlogo.cn/mmopen/vi_32/1hp9kzzuLUVHzmmddIPIO2OgUWr1ibJRr8cMoB7K0fwx8Vmn34L8yN2NoYUtgNicfPGaXKF02pQ2huXd59r2I0kw/132" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">三胖</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>3</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        老师，我才学了四分之一的课程，但是这门课已经更新完了，我是直接跑到最后一节技术篇来留言的！很想知道，后来者比如我在学到后面的课程时遇到问题留言，老师还会看会回复吗？（老师的课程超值！！）
+        </div> 
+        <span class="time">2019-02-25</span> 
+                <div class="reply">
+                        <div class="reply-hd">
+                        <i class="iconfont"></i> 
+                        <span>作者回复</span>
+                        </div> 
+                        <p class="reply-content">会看的<br><br>后台系统是按照留言时间显示的<br>而且我在这事情上有强迫症，一定会让“未处理问题”变成0的😆<br><br>只是说如果是其他同学评论区问过的问题，我可能就不会重复回复了</p> 
+                        <p class="reply-time">2019-02-25</p>
+                    </div>
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/account/avatar/00/13/f8/70/f3a33a14.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">某、人</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>2</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        很遗憾没能坚持到最后,但是也很庆幸能遇到这么好的专栏。以前了解mysql都是一些零散的知识点,通过学习完专栏,不论是mysql整体架构还是基础的知识点,都有了更深的认识。以后就把老师的文档当官方文档查,出现问题先来看看专栏。<br>感触特别深的是,老师对于提到的每一个问题,都会严谨又认真的去回答,尽量帮助每一位同学都能有所收获。要做到这一点，是特别耗费精力的。<br>感谢老师的传道授业解惑,希望以后有机会能当面向老师请教问题。期待老师下一部杰作
+        </div> 
+        <span class="time">2019-02-26</span> 
+                <div class="reply">
+                        <div class="reply-hd">
+                        <i class="iconfont"></i> 
+                        <span>作者回复</span>
+                        </div> 
+                        <p class="reply-content">刚过完年都是很忙的， 找时间补上哈，等你的评论区留言^_^</p> 
+                        <p class="reply-time">2019-02-26</p>
+                    </div>
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/account/avatar/00/13/57/6e/dd0eee5f.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">夜空中最亮的星（华仔）</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>2</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        不知道是最后一篇，否则的话就慢些读完了；<br>我是一名运维，公司也没有DBA，所以MySQL库也归我收拾；<br>读了老师的专栏，操作起数据库来，心情更好了；<br>老师的课，让我有了想看完《高性能MySQL》的兴趣；<br>听了老师的课，开发都来问我数据库的问题了，高兴；<br>老师你会有返场吗？我猜会 😄<br>可否透漏下接下来的安排，会有续集吗？进阶吗？<br>不想这一别就是一生。<br>您的从未谋面的学生。
+        </div> 
+        <span class="time">2019-02-25</span> 
+                <div class="reply">
+                        <div class="reply-hd">
+                        <i class="iconfont"></i> 
+                        <span>作者回复</span>
+                        </div> 
+                        <p class="reply-content">谢谢你<br><br>“开发都来问我数据库的问题了”，当年我也是这么开始“入坑”，加油</p> 
+                        <p class="reply-time">2019-02-25</p>
+                    </div>
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/account/avatar/00/14/5e/e2/c27c9ec5.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">极客时间</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>2</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        通過這個專欄的系統學習，梳理很多知識點、擴展了我對MySQL的認識及以後使用。感謝老師的諄諄教導！
+        </div> 
+        <span class="time">2019-02-25</span> 
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/account/avatar/00/10/e3/12/fd02db2e.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">NoDBA</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>1</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        低版本thread_id超过2^32-1后，在general log显示是负数，高版本貌似没有这个问题，是否高版本的thread_id是8字节呢？
+        </div> 
+        <span class="time">2019-02-27</span> 
+                <div class="reply">
+                        <div class="reply-hd">
+                        <i class="iconfont"></i> 
+                        <span>作者回复</span>
+                        </div> 
+                        <p class="reply-content">主要不是定义的问题，而是打印的时候代码问题，按照这个代码输出的：<br>&quot;%5ld &quot;, (long) thread_id<br><br>是个bug， 超过2^31就变成负数了，<br>新版本改了<br><br>好问题😆</p> 
+                        <p class="reply-time">2019-02-28</p>
+                    </div>
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/account/avatar/00/11/91/3b/e4b0dd97.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">kun</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>1</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        感觉戛然而止哈 没学够，后面还会再回顾，老师辛苦！
+        </div> 
+        <span class="time">2019-02-26</span> 
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/account/avatar/00/10/93/8a/abb7bfe3.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">亮</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>1</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        老师，sql 的where里  &lt; 10001 和 &lt;= 10000有什么区别吗？
+        </div> 
+        <span class="time">2019-02-25</span> 
+                <div class="reply">
+                        <div class="reply-hd">
+                        <i class="iconfont"></i> 
+                        <span>作者回复</span>
+                        </div> 
+                        <p class="reply-content">这要看你关注的是什么<br>你这么问，应该这个字段是整型吧？<br><br>从查询结果可能是一样的，<br>不过锁的范围不同，你可以看下21篇</p> 
+                        <p class="reply-time">2019-02-25</p>
+                    </div>
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/account/avatar/00/10/d4/fd/43802282.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">IceGeek17</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>1</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        感谢老师，课程受益匪浅，<br>课程结束后，如果有问题，是继续在这里的评论区提问，还是会有另外一条答疑通道？<br><br>另外，在第35篇我提了几个问题，老师还没有回答，我这里再贴一下，老师看一下<br>问题一：<br>对于BKA算法的流程理解，用文中的例子，先把t1表（小表）中查询需要的字段放入join_buffer, 然后把join_buffer里的字段值批量传给t2表，先根据索引a查到id，然后得到一批主键id，再根据主键id排序，然后再根据排完序的id去主键索引查数据（这里用到MRR）<br>理解是否正确？<br>这里对于主键id排序是在哪里做的，是在join_buffer里，还是另外再开辟一块临时内存？如果在join_buffer里，那join_buffer里的每行内容是不是：t2.id + t1查询必须的字段，并且join_buffer里是根据id排序的？<br><br>问题二：<br>虽然MySQL官方没有支持hash join，但是之前看到文章说，MariaDB已经支持hash join，能不能后续在答疑文章中简单总结下mariaDB支持的join算法<br><br>问题三：<br>在实际项目中，一个比较困惑的问题，看到过这样的类似写法：<br>select xxx from t1 join t2 on t1.id = t2.id for update （目的是获取几个表上最新的数据，并且加上锁，防止数据被更新）<br>这里有几个问题：<br>1) 像这样 join + for update，表上的加锁规则是怎么样的？是不是在需要join的两个表上根据具体的查询执行过程都加上锁？<br>2）像这样 join + for update 的用法是否合理？碰到这样的场景，应该怎么去做？<br><br>问题四：<br>看过阿里输出的开发手册里，强调 “最多不超过三表join”，实际项目中，给我感觉很难做到所有业务都不超过三表join，那这里的问题就是，有什么相关的经验方法，可以尽量降低参与join的数据表？<br>比如，在数据表里添加冗余字段，可以降低参与join的数据表数量，还有什么其他好的方法？<br>
+        </div> 
+        <span class="time">2019-02-25</span> 
+                <div class="reply">
+                        <div class="reply-hd">
+                        <i class="iconfont"></i> 
+                        <span>作者回复</span>
+                        </div> 
+                        <p class="reply-content">就在我们评论区，提跟文章相关的内容，会继续关注。<br><br>问题一、前面的过程理解正确，MRR过程用的是read_rnd_buffer <br><br>问题二、其实我们文中最后那个过程，你把他设想成在MySQL内部执行。。<br><br>问题三、这种复杂的语句，你要把我们两部分知识点连起来看。一个原则：for update的话，执行语句过程中扫到的间隙和记录都要加锁。   当然最好是不这么做，拆成两个语句会好些。<br><br>问题四、还是我文中的建议，如果都用NLJ或BKA算法的join其实还好，所以看看explain。<br>降低join表数量的方法，基本上行就是冗余字段和拆成多个语句这两个方向了</p> 
+                        <p class="reply-time">2019-02-25</p>
+                    </div>
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/account/avatar/00/12/9b/a8/6a391c66.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">Leon📷</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>1</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        跟着老师终于学到了最后，每天的地铁时间无比充实，我对mysql的基本原理和工作流程大致有了初步的了解，而不是以前的增删查改，打算以后抽时间再二刷三刷，等全部搞懂后，再去看看高性能mysql这本书，如果时间允许，打算再去自己参照教程实现一个简易的DB，课程虽然结束了，仍然感觉意犹未尽，希望老师拉一个倍洽群，大家一起在里面讨论和学习
+        </div> 
+        <span class="time">2019-02-25</span> 
+                <div class="reply">
+                        <div class="reply-hd">
+                        <i class="iconfont"></i> 
+                        <span>作者回复</span>
+                        </div> 
+                        <p class="reply-content">👍 <br>评论区一直会开放<br><br>大家到对应的文章去提相关问题 🤝<br>二刷三刷我也一直在哦😆</p> 
+                        <p class="reply-time">2019-02-25</p>
+                    </div>
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/account/avatar/00/0f/46/56/5e83f44b.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">Dkey</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>1</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        当前系统并无其他事务存在时，启动一个只读事务时（意味没有事务id），它的低高水位是怎么样的老师。
+        </div> 
+        <span class="time">2019-02-25</span> 
+                <div class="reply">
+                        <div class="reply-hd">
+                        <i class="iconfont"></i> 
+                        <span>作者回复</span>
+                        </div> 
+                        <p class="reply-content">假设当前没有其他事务存在，假设当前的max_trx_id=N,<br>这时候启动一个只读事务，它的高低水位就都是N。</p> 
+                        <p class="reply-time">2019-02-25</p>
+                    </div>
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/static/time/img/defaultAvatar.e4ab9fe.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">shawn</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>1</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        受益匪浅，最后几讲还想了解下null值如何建立索引，由于null直接不能比较和排序，MySQL能区分出每一个null值吗
+        </div> 
+        <span class="time">2019-02-25</span> 
+                <div class="reply">
+                        <div class="reply-hd">
+                        <i class="iconfont"></i> 
+                        <span>作者回复</span>
+                        </div> 
+                        <p class="reply-content">可以，因为普通索引上都有主键值对吧，<br><br>所以其实是 (null, id1), (null, id2) ....</p> 
+                        <p class="reply-time">2019-02-25</p>
+                    </div>
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/account/avatar/00/13/e3/1a/061e77b6.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">亢星东</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>0</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        id是有上限的，这个的id上限是45，这个结局可以，讲的不错，学到很多
+        </div> 
+        <span class="time">2019-03-13</span> 
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/account/avatar/00/14/a2/63/59a3d8d4.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">Bamboo</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>0</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        今天终于读完了，从对MySQL只停留在CRUD操作的水平，慢慢开始对MySQL底层的机制有了一些认识，在遇到问题时，会首先从底层原理去分析，并结合explain来验证自己的分析，一次很nice的学习之旅。感谢大神老师这么认真负责，节假日都不休息，哈哈！
+        </div> 
+        <span class="time">2019-03-12</span> 
+                <div class="reply">
+                        <div class="reply-hd">
+                        <i class="iconfont"></i> 
+                        <span>作者回复</span>
+                        </div> 
+                        <p class="reply-content">👍</p> 
+                        <p class="reply-time">2019-03-13</p>
+                    </div>
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/account/avatar/00/11/cc/25/8c6eab2c.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">ArtistLu</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>0</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        相遇恨晚😆，安慰下自己，种树的最好时机是十年前，其次是现在！！！谢谢老师
+        </div> 
+        <span class="time">2019-03-08</span> 
+                <div class="reply">
+                        <div class="reply-hd">
+                        <i class="iconfont"></i> 
+                        <span>作者回复</span>
+                        </div> 
+                        <p class="reply-content">🤝</p> 
+                        <p class="reply-time">2019-03-09</p>
+                    </div>
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/account/avatar/00/11/44/a7/e83f2f2b.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">fighting</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>0</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        已经二刷了，准备三刷四刷
+        </div> 
+        <span class="time">2019-03-07</span> 
+                <div class="reply">
+                        <div class="reply-hd">
+                        <i class="iconfont"></i> 
+                        <span>作者回复</span>
+                        </div> 
+                        <p class="reply-content">👍🏿🤝</p> 
+                        <p class="reply-time">2019-03-09</p>
+                    </div>
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/account/avatar/00/0f/73/4f/abb7bfe3.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">沙漠里的骆驼</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>0</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        讲的非常好，是我遇到课程讲授最好的了。今天刚和池老师说，希望可以有线下的课程，比如完成一个数据库的完整设计，从最上层的sql语法解析器到底层的文件调度系统。在集中的时间里面比如1个月或者2个月，线下组织大家一起，每个人都完成一个tiny_db的工程。我想这是最好的成长了。不知道老师是否也有这方面的想法？<br>不管如何，真的很感谢老师。如此娓娓道来，所谓的如沐春风便是如此吧。
+        </div> 
+        <span class="time">2019-03-06</span> 
+                <div class="reply">
+                        <div class="reply-hd">
+                        <i class="iconfont"></i> 
+                        <span>作者回复</span>
+                        </div> 
+                        <p class="reply-content">谢谢你。<br>后面只要还是在评论区继续和大家交流😄</p> 
+                        <p class="reply-time">2019-03-07</p>
+                    </div>
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTIVus1GUCwicLqJSfgWuHON9FymBWicPOecH8rIxMh8J2WrX2N6Dd1MqgIqq0TR956YZ9Lwb3Qf4xBw/132" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">芬</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>0</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+        学习到了很多平时没有关注到的小细节，很赞！当然 师傅领进门 修行靠个人。剩下的就是自己好好消化应用了，谢谢老师
+        </div> 
+        <span class="time">2019-02-28</span> 
+        </div></li>
+    <li data-v-87ffcada="" class="comment-item">
+        <img src="https://static001.geekbang.org/account/avatar/00/13/e0/48/3d72e81c.jpg" class="avatar" /> 
+        <div class="info">
+        <div class="hd">
+        <span class="username">封建的风</span> 
+        <div class="control">
+        <!----> 
+        <a href="javascript:;" class="btn-praise"><i class="iconfont"></i> <span>0</span></a>
+        </div>
+        </div> 
+        <div class="bd">
+                之前很多知识点有点粗浅，尤其在行版本可见性，redo log&amp;bin log关系，加锁的原理章节，深入浅出，受益匪浅。感谢老师精品专栏，后期再二刷
+        </div> 
+        <span class="time">2019-02-27</span> 
+        </div></li>
+
+                              
+                              </ul>
+                       </div>
+                     </div>
+      </div>
+   </body>
+   </html>
