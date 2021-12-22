@@ -15,7 +15,7 @@
 
 ##### 3.spring-boot-demo(:star::star::star::star::star:)
 
-太有用了这个项目，不但可以给新手提供一些有价值的小项目，而且可以学习一下别人的代码和注释规范。
+太有用了这个项目，提供一些有价值的小项目，而且可以学习一下别人的代码和注释规范。
 
 项目地址：https://github.com/xkcoding/spring-boot-demo
 
@@ -24,4 +24,3 @@
 学习源码，不多说
 
 项目地址：https://github.com/seaswalker/spring-analysis
-

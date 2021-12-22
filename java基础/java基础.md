@@ -69,11 +69,15 @@ StringBuffer 和 StringBuilder 类的对象能够被多次的修改，并且不�
 
 另外在java字符串进行拼接的时候，编译器会优化为通过**StringBuilder**来实现字符串的拼接，再toString返回。
 
-### 7. 抽象类和接口的区别
+### 7. 抽象类和接口的区别？
 
-含有abstract修饰符的class即为抽象类，abstract 类不能创建实例对象。含有abstract方法的类必须定义为abstract class，abstract class类中的方法不必是抽象的。abstract 类中定义抽象方法必须在具体(Concrete)子类中实现，所以，不能有抽象构造方法或抽象静态方法。如果子类没有实现抽象父类中的所有抽象方法，那么子类也必须定义为abstract类型。
 
-接口（interface）可以说成是抽象类的一种特例，<u>接口中的所有方法都必须是抽象的</u>。接口中的方法定义默认为public abstract类型，<u>接口中的成员变量类型默认为public static final</u>，抽象类和接口都不能直接实例化，如果要实例化，抽象类变量必须指向实现    		
+
+**抽象类：**含有abstract修饰符的class即为抽象类，abstract 类不能创建实例对象。含有abstract方法的类必须定义为abstract class，abstract class类中的方法不必是抽象的。abstract 类中定义抽象方法必须在具体(Concrete)子类中实现，所以，不能有抽象构造方法或抽象静态方法。如果子类没有实现抽象父类中的所有抽象方法，那么子类也必须定义为abstract类型。
+
+**接口：**可以说成是抽象类的一种特例，<u>接口中的所有方法都必须是抽象的</u>。接口中的方法定义默认为public abstract类型，<u>接口中的成员变量类型默认为public static final</u>，抽象类和接口都不能直接实例化，如果要实例化，抽象类变量必须指向实现    
+
+**两者区别：**		
 
 1.所有抽象方法的子类对象，接口变量必须指向实现所有接口方法的类对象。
 
@@ -95,9 +99,9 @@ StringBuffer 和 StringBuilder 类的对象能够被多次的修改，并且不�
 
 10、接口可继承接口，并可多继承接口，但类只能单根继承
 
+**注意**：JDK 1.8 以后，接口里可以有静态方法和方法体了。
 
-
-### 8. 普通类和抽象类有哪些区别？
+### 8. 普通类和抽象类区别？
 
 · 抽象类不能被实例化
 
@@ -125,7 +129,7 @@ Java集合是java提供的工具包，包含了常用的数据结构：**集合�
 
 细读：https://link.juejin.cn/?target=http%3A%2F%2Fblog.csdn.net%2Fhguisu%2Farticle%2Fdetails%2F6155636
 
-### 11. java中null；
+### 11. java中null
 
 1.null是任何引用类型的默认值
 
@@ -154,7 +158,7 @@ Java集合是java提供的工具包，包含了常用的数据结构：**集合�
 
 ***总结：***
 
-1、重写实现的是**运行时的多态**，而重载实现的是**编译时的多态**。 
+1、重写实现的是**运行时的多态**，编译时看不出子类调用的是哪个方法，但是运行时操作数栈会先根据子类的引用去子类的类信息中查找方法，找不到的话再到父类的类信息中查找方法。而重载实现的是**编译时的多态**，编译期就可以确定传入的参数组合，决定调用的具体方法是哪一个了。
 
 2、重写的方法参数列表必须相同；而重载的方法参数列表必须不同。 
 
@@ -241,17 +245,130 @@ class D extends B...{}
 
 同步阻塞的BIO、同步非阻塞的NIO、异步非阻塞的AIO
 
-转->[](../经典面试题.md)的23.BIO，NIO，AIO区别
+转–>[](../经典面试题.md)的23.BIO，NIO，AIO区别
 
 ### 16.unicode和UTF8区别
 
 细读：https://blog.csdn.net/qq_36761831/article/details/82291166
 
-### 17.Int和integer的区别. 自动拆箱，装箱是怎么实现的
-
-a 和 b的取值只要在-128到127之间，那么他们指的就是同一个，即使==比较的是两者的引用，两者也是相同的，因为-128到127这些数字是使用频率比较高的，就产生了一个整型常量池，这些数字会存放在这里，有相同的数字则不会再次创建，所以a和b指的是同一个，因此两者相同，当然如果是在这个范围之外的数字，那结果就是false了
+### 17.Int和integer的区别，自动拆箱，装箱是怎么实现的。
 
 在装箱的时候自动调用的是*Integer的valueOf(int)方法*。而在拆箱的时候自动调用的是*Integer的intValue方法*。
+
+对于每个基本类型，都会有对应的引用类型。int->Integer,byte->Byte, short→Short,long---›Long, float→Float,double→Double，他们内部都有两个方法：
+
+**静态方法valueOf(基本类型)**：将给定的基本类型转换成对应的包装类型；
+
+**实例方法xxxValue()：**将具体的包装类型对象转换成基本类型； 
+
+##### Integer源码：
+
+```java
+public final class Integer extends Number implements Comparable<Integer> {
+private final int value;
+
+/*Integer的构造方法，接受一个整型参数,Integer对象表示的int值，保存在value中*/
+ public Integer(int value) {
+        this.value = value;
+ }
+/*equals()方法判断的是:所代表的int型的值是否相等*/
+ public boolean equals(Object obj) {
+        if (obj instanceof Integer) {
+            return value == ((Integer)obj).intValue();
+        }
+        return false;
+}
+/*返回这个Integer对象代表的int值，也就是保存在value中的值*/
+ public int intValue() {
+        return value;
+ }
+ /**
+  * 首先会判断i是否在[IntegerCache.low,Integer.high]之间
+  * 如果是，直接返回Integer.cache中相应的元素
+  * 否则，调用构造方法，创建一个新的Integer对象
+  */
+ public static Integer valueOf(int i) {
+    assert IntegerCache.high >= 127;
+    if (i >= IntegerCache.low && i <= IntegerCache.high)
+        return IntegerCache.cache[i + (-IntegerCache.low)];
+    return new Integer(i);
+ }
+/**
+  * 静态内部类，缓存了从[low,high]对应的Integer对象
+  * low -128这个值不会被改变
+  * high 默认是127，可以改变，最大不超过：Integer.MAX_VALUE - (-low) -1
+  * cache 保存从[low,high]对象的Integer对象
+ */
+ private static class IntegerCache {
+    static final int low = -128;
+    static final int high;
+    static final Integer cache[];
+
+    static {
+        // high value may be configured by property
+        int h = 127;
+        String integerCacheHighPropValue =
+            sun.misc.VM.getSavedProperty("java.lang.Integer.IntegerCache.high");
+        if (integerCacheHighPropValue != null) {
+            int i = parseInt(integerCacheHighPropValue);
+            i = Math.max(i, 127);
+            // Maximum array size is Integer.MAX_VALUE
+            h = Math.min(i, Integer.MAX_VALUE - (-low) -1);
+        }
+        high = h;
+ 
+        cache = new Integer[(high - low) + 1];
+        int j = low;
+        for(int k = 0; k < cache.length; k++)
+            cache[k] = new Integer(j++);
+    }
+    private IntegerCache() {}
+}
+```
+
+以上是Oracle(Sun)公司JDK 1.7中Integer源码的一部分，通过分析上面的代码，得到：
+
+1）Integer有一个实例域value，它保存了这个Integer所代表的int型的值，且它是**final的**，也就是说这个Integer对象一经构造完成，它所代表的值就不能再被改变。
+
+2）Integer**重写了equals()方法**，它通过比较两个Integer对象的value，来判断是否相等。
+
+3）重点是静态内部类IntegerCache，通过类名就可以发现：它是用来缓存数据的。它有一个数组，里面保存的是连续的Integer对象。 (a) low：代表缓存数据中最小的值，固定是-128。
+
+(b) high：代表缓存数据中最大的值，它可以被该改变，默认是127。high最小是127，最大是Integer.MAX_VALUE-(-low)-1，如果high超过了这个值，那么cache[ ]的长度就超过Integer.MAX_VALUE了，也就溢出了。
+
+(c) cache[]：里面保存着从[low,high]所对应的Integer对象，长度是high-low+1(因为有元素0，所以要加1)。
+
+4）调用valueOf(inti)方法时，首先判断i是否在[low,high]之间，如果是，则复用Integer.cache[i-low]。比如，如果Integer.valueOf(3)，直接返回Integer.cache[131]；如果i不在这个范围，则调用构造方法，构造出一个新的Integer对象。
+
+5）调用intValue()，直接返回value的值。 通过3）和4）可以发现，默认情况下，在使用自动装箱时，VM会复用[-128,127]之间的Integer对象。
+
+##### 总结：
+
+通过上面的代码，我们分析一下自动装箱与拆箱发生的时机：
+
+（1）当需要一个对象的时候会自动装箱，比如Integer a = 10;equals(Object o)方法的参数是Object对象，所以需要装箱。
+
+（2）当需要一个基本类型时会自动拆箱，比如int a = new Integer(10);算术运算是在基本类型间进行的，所以当遇到算术运算时会自动拆箱，比如代码中的 c == (a + b);
+
+（3） 包装类型 **==** 基本类型时，包装类型自动拆箱；
+
+需要注意的是：“==”在没遇到算术运算时，不会自动拆箱；基本类型只会自动装箱为对应的包装类型，代码中最后一条说明的内容。
+
+在JDK 1.5中提供了自动装箱与自动拆箱，这其实是Java 编译器的语法糖，编译器通过调用包装类型的valueOf()方法实现自动装箱，调用xxxValue()方法自动拆箱。自动装箱和拆箱会有一些陷阱，那就是包装类型复用了某些对象。
+
+（1）Integer默认复用了[-128,127]这些对象，其中高位置可以修改；
+
+（2）Byte复用了全部256个对象[-128,127]；
+
+（3）Short复用了[-128,127]这些对象；
+
+（4）Long复用了[-128,127];
+
+（5）Character复用了[0,127],Charater不能表示负数;
+
+**Double和Float是连续不可数的，所以没法复用对象，也就不存在自动装箱复用陷阱。**
+
+Boolean没有自动装箱与拆箱，它也复用了Boolean.TRUE和Boolean.FALSE，通过Boolean.valueOf(boolean b)返回的Blooean对象要么是TRUE，要么是FALSE，这点也要注意。
 
 ### 18. java 8&9&10&11新特性
 
@@ -333,8 +450,159 @@ https://www.jianshu.com/p/5b800057f2d8
    System.out.println(e2.get(2)); // 2
    ```
 
-
 ### 20.new Integer(123) 与 Integer.valueOf(123) 区别？
 
+细读：https://blog.csdn.net/liufangbaishi2014/article/details/52792086
+
+```java
+// new Integer每次出来都是不同的对象
+// 但是Integer.valueOf(i)当i >= -128 && i <= 127时，使用缓存机制，返回的是同一个对象。
+public static void main(String[] args) {
+        Integer a = new Integer(1);
+        Integer b = new Integer(1);
+        System.out.println("a==b? " + (a==b));
+        Integer c = Integer.valueOf(1);
+        Integer d = Integer.valueOf(1);
+        System.out.println("c==d? " + (c==d));
+    }
+//a==b? false
+//c==d? true
+```
+
+
+
 ### 21.java中的类型转换
+
+自动类型转换：
+
+>   Byte→short→int→long---›float→double
+>
+>   小的类型自动转化为大的类型。
+>
+>   整数类型可以自动转化为浮点类型，可能会产生舍入误差。
+
+强制类型转换：
+
+>    大类型转小类型，在大类型前加（小类型）强制转换，可能会丢失精度（舍弃小数点等）
+
+
+
+### 22.面向对象和面向过程区别
+
+*   ***面向过程：***该思想是站着过程的角度思考问题，强调的就是功能行为，功能的执行过程，即先后顺序，而每一个功能我们都使用函数（类似于方法）把这些步骤一步一步实现。使用的时候依次调用函数就可以了。
+*   ***面向对象：***将问题分解成各个对象，来描叙某个事物在整个解决问题的步骤中的行为。
+
+例如五子棋，面向过程的设计思路就是首先分析问题的步骤：1、开始游戏，2、黑子先走，3、绘制画面，4、判断输赢，5、轮到白子，6、绘制画面，7、判断输赢，8、返回步骤2，9、输出最后结果。把上面每个步骤用不同的方法来实现，我们只需要关心每一个功能函数的编写。
+
+面向对象的设计则是整个五子棋可以分为 1、**黑白双方**，这两方的行为是一模一样的，2、**棋盘系统**，负责绘制画面，3、**规则系统**，负责判定诸如犯规、输赢等。第一类对象（玩家对象）负责接受用户输入，并告知第二类对象（棋盘对象）棋子布局的变化，棋盘对象接收到了棋子的变化就要负责在屏幕上面显示出这种变化，同时利用第三类对象（规则系统）来对棋局进行判定。所以我们只需把问题抽象为，什么对象（类），有什么属性（成员变量），干了什么事情（函数方法）。
+
+### 23.向上转型和向下转型
+
+向上转型和向下转型都是**针对引用的转型**，是**编译期进行的转型**，根据引用类型来判断使用哪个方法。并且在传入方法时会自动进行转型（有需要的话）。运行期将引用指向实例，如果是不安全的转型则会报错，若安全则继续执行方法。也就是我们常说的：编译看左，运行看右。
+
+**向上转型：**
+
+```java
+		假设Son是Father的子类，Son中方法有：smoke(),play();Father中方法有：smoke()，drive（）
+		Son son = new Son();
+    //首先先明确一点，转型指的是左侧引用的改变。
+    //father引用类型是Father，指向Son实例，就是向上转型，既可以使用子类的方法，也可以使用父类的方法。
+    Father father = son;//向上转型,此时运行father的方法
+    father.smoke();
+    //不能使用子类独有的方法。
+    // father.play();编译会报错
+    father.drive();
+    //Son类型的引用指向Father的实例，所以是向下转型，不能使用子类非重写的方法，可以使用父类的方法。
+```
+
+向下转型：两种情况：如果是先向上转型，再向下，则没有报错；如果本身就是父类，直接转为子类，调用子类方法，则编译不错，运行错误（ClassCastException错误）。
+
+```java
+//向下转型，此时运行了son的方法
+    Son son1 = (Son) father;
+    //转型后就是一个正常的Son实例
+    son1.play();
+    son1.drive();
+    son1.smoke();
+    
+   //因为向下转型之前必须先经历向上转型。
+	//在向下转型过程中，分为两种情况：
+
+	//情况一：如果父类引用的对象如果引用的是指向的子类对象，
+	//那么在向下转型的过程中是安全的。也就是编译是不会出错误的。
+    //因为运行期Son实例确实有这些方法
+    Father f1 = new Son();
+    Son s1 = (Son) f1;
+    s1.smoke();
+    s1.drive();
+    s1.play();
+
+    //情况二：如果父类引用的对象是父类本身，那么在向下转型的过程中是不安全的，编译不会出错，
+    //但是运行时会出现java.lang.ClassCastException错误。它可以使用instanceof来避免出错此类错误。
+    //因为运行期Father实例并没有这些方法。
+        Father f2 = new Father();
+        Son s2 = (Son) f2;
+        s2.drive();
+        s2.smoke();
+        s2.play();
+```
+
+### 24.构造方法，代码块，静态代码块执行顺序
+
+```java
+class A {
+    public A() {
+        System.out.println("1A类的构造方法");
+    }
+    {
+        System.out.println("2A类的构造快");
+    }
+    static {
+        System.out.println("3A类的静态块");
+    }
+}
+ 
+public class B extends A {
+    public B() {
+        System.out.println("4B类的构造方法");
+    }
+    {
+        System.out.println("5B类的构造快");
+    }
+    static {
+        System.out.println("6B类的静态块");
+    }
+    public static void main(String[] args) {
+        System.out.println("7");
+        new B();
+        new B();
+        System.out.println("8");
+    }
+}
+```
+
+<u>执行顺序结果为：367215421548</u>
+
+执行顺序依次为：
+
+>   父类的静态成员和代码块
+>          子类静态成员和代码块
+>          父类成员初始化和代码快
+>    	   父类构造方法
+>   		子类成员初始化和代码块
+>   		子类构造方法
+
+
+
+每次new都会执行构造方法以及构造块。 构造块的内容会在构造方法之前执行。 非主类的静态块会在类加载时，构造方法和构造块之前执行，切只执行一次。 主类（public class）里的静态块会先于main执行。 继承中，子类实例化，会先执行父类的构造方法，产生父类对象，再调用子类构造方法。 所以题目里，由于主类B继承A，所以会先加载A，所以第一个执行的是第3句。
+
+从第4点我们知道6会在7之前执行，所以前三句是367。
+
+之后实例化了B两次，每次都会先实例化他的父类A，然后再实例化B，而根据第1、2、5点，知道顺序为2154。
+
+最后执行8。
+
+所以顺序是367215421548
+
+### 24.String类详解
 
