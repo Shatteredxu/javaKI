@@ -376,7 +376,29 @@ Boolean没有自动装箱与拆箱，它也复用了Boolean.TRUE和Boolean.FALSE
 
 https://www.jianshu.com/p/5b800057f2d8
 
+学习：https://github.com/h2pl/Java-Tutorial/blob/master/docs/java/basic/21%E3%80%81Java8%E6%96%B0%E7%89%B9%E6%80%A7%E7%BB%88%E6%9E%81%E6%8C%87%E5%8D%97.md
+
 1. Lambda 表达式
+
+    创建一个线程：`new Thread(() -> System.out.println("Hello World")).start();`
+
+    自定义排序方法：都是使用Lambda 表达式
+
+    ```java
+    					//不使用Lambda 表达式
+    					Collections.sort(names, new Comparator<String>() {
+                @Override
+                public int compare(String a, String b) {
+                    return b.compareTo(a);
+                }
+            });
+    				//使用Lambda 表达式
+    				Collections.sort(names, (String a, String b) -> {
+                return b.compareTo(a);
+            });
+            Collections.sort(names, (String a, String b) -> b.compareTo(a));
+            Collections.sort(names, (a, b) -> b.compareTo(a));
+    ```
 
 2. 接口的默认方法和静态方法
 
@@ -386,17 +408,25 @@ https://www.jianshu.com/p/5b800057f2d8
 
 4. 重复注解
 
-5. Date/Time API
+    相同的注解可以在同一地方声明多次
 
-6. Stream API
+5. 方法参数名字可以反射获取
 
-7. Optional
+6. Date/Time API
 
-8. Nashorn JavaScript引擎
+7. Stream API
+
+    **函数式编程方法**
+
+8. Optional
+
+    处理空值
+
+9. Nashorn JavaScript引擎
 
    可以在JVM上运行JavaScript应用
 
-9. Base64
+10. Base64
 
 ###### java 9 特性
 
@@ -604,5 +634,5 @@ public class B extends A {
 
 所以顺序是367215421548
 
-### 24.String类详解
+### 24.值传递和引用传递
 

@@ -9,8 +9,7 @@ java集合框架
 
 #### ArrayList
 
->   		ArrayList考点没有很多，首先extends AbstractList 并实现了List接口（第一个考点：**为什么同时继承AbstractList ，又实现List**）接着就是初始化，初始化如果有传入容量就对容量进行有效性判断，如果没有，就使用默认容量（默认：10，最小也是10）。然后它的基本方法都很简单（第二个考点：**初始化时ArrayList底层数组并没有形成，而是第一次add是创建的底层数组**），基本就是对数组进行操作，如果需要扩容（第三个点：**扩容扩多少，怎么去扩**），则生成一个新的Capacity(当然其中包括了很多判断，总之不能超过Integer.MAX_VALUE )，在进行深拷贝 System.arraycopy（第四个考点：**深拷贝**），替换到新的数组中。哦对，还有一个**fast-fail机制**。
->   -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+>   				ArrayList考点没有很多，首先extends AbstractList 并实现了List接口（第一个考点：**为什么同时继承AbstractList ，又实现List**）接着就是初始化，初始化如果有传入容量就对容量进行有效性判断，如果没有，就使用默认容量（默认：10，最小也是10）。然后它的基本方法都很简单（第二个考点：**初始化时ArrayList底层数组并没有形成，而是第一次add是创建的底层数组**），基本就是对数组进行操作，如果需要扩容（第三个点：**扩容扩多少，怎么去扩**），则生成一个新的Capacity(当然其中包括了很多判断，总之不能超过Integer.MAX_VALUE )，在进行深拷贝 System.arraycopy（第四个考点：**深拷贝**），替换到新的数组中。哦对，还有一个**fast-fail机制**。
 
 1. List接口下的一个实现，使用数组存储
 
@@ -71,55 +70,125 @@ CopyOnWriteArrayList适合使用在读操作远远大于写操作的场景里，
 
 继承自List<E>, RandomAccess, Cloneable, java.io.Serializable
 
-
-
-#### Set
-
-Set是个接口，继承自collection，iterable，
-
-> set接口下有HashSet，TreeSet
-
-##### HashSet
-
-**构造函数：**1.默认无参构造2. 带集合的构造函数3.指定HashSet初始容量和加载因子的构造函数4.指定HashSet初始容量的构造函数
-
-**继承自：**Set<E>, Cloneable, java.io.Serializable，AbstractSet
-
-
-
-#### Queue
-
-![queue接口的实现类](assets/queue接口的实现类.png)
-
-queue继承collection,iterable,
-
-> Queue接口下有Deque(双端队列)，BlockingQueue(阻塞队列)，AbstractQueue(非阻塞队列)
-
-接口queue中的方法:
-
-```java
-add,offer,remove,poll,element，peek，都是抽象方法，需要子类去实现
-```
-
- Deque<E> extends Queue
-
-接口deque中的方法：
-
-```java
-除了collection，Queue接口上继承的方法，还有自己针对双链表操作的方法，addFirst，addLast，offerFirst，offerLast，removeFirst，removeLast，pollFirst，pollLast，getFirst，getLast，peekFirst，peekLast，removeFirstOccurrence，removeLastOccurrence，descendingIterator，push，pop
-```
-
 ### Map
 
 > Map接口下有HashMap（HashMap下面还有LinkedHashMap，ConcurrentHashMap，weakHashMap等等）,TreeMap, HashTable
 
+Map架构：
+
+![img](assets/map架构.jpg)
+
+1.  AbstractMap 是**继承于Map的抽象类，它实现了Map中的大部分API**。其它Map的实现类可以通过继承AbstractMap来减少重复编码。
+2.  SortedMap 是继承于Map的接口。SortedMap中的内容是**排序的键值对**，排序的方法是通过比较器(Comparator)。
+3.   TreeMap 继承于AbstractMap，且实现了NavigableMap接口；因此，TreeMap中的内容是“**有序的键值对**”！
+4.  HashMap 继承于AbstractMap，但没实现NavigableMap接口；因此，HashMap的内容是“**键值对，但不保证次序**”！
+5.  Hashtable 虽然不是继承于AbstractMap，但它继承于Dictionary(Dictionary也是键值对的接口)，而且也实现Map接口；因此，Hashtable的内容也是“**键值对，也不保证次序**”。但和HashMap相比，Hashtable是线程安全的，而且它支持通过Enumeration去遍历。
+6.  WeakHashMap 继承于AbstractMap。它和HashMap的键类型不同，**WeakHashMap的键是“弱键”**。
+
+Map常见API:
+
+>   abstract void                 clear()
+>   abstract boolean              **containsKey(Object key)**
+>   abstract boolean              **containsValue(Object value)**
+>   abstract Set<Entry<K, V>>     **entrySet()**// 通过 entrySet() 获取Map.Entry的键值对集合，从而通过该集合实现对键值对的操作。
+>   abstract boolean              equals(Object object)
+>   abstract V                    **get(Object key)**//根据key返回一个Value
+>   abstract int                  hashCode()
+>   abstract boolean              isEmpty()
+>   abstract Set<K>               keySet()
+>   abstract V                    put(K key, V value)
+>   abstract void                 putAll(Map<? extends K, ? extends V> map)
+>   abstract V                    remove(Object key)
+>   abstract int                  size()
+>   abstract Collection<V>        values()//返回**值集**的**Collection集合**
+
 #### HashMap
 
+查看：[HashMap源码解析](./java集合源码分析/hashMap源码.md)
 
+#### LinkedHashMap
+
+由于hashMap的插入时无序的，对HashMap的迭代并不是按照其插入顺序的,所以引入了LinkedHashMap，其迭代顺序可以是插入顺序，也可以是访问顺序。因此，根据链表中元素的顺序可以将LinkedHashMap分为：**保持插入顺序的LinkedHashMap** 和 **保持访问顺序的LinkedHashMap**。
+
+![img](assets/20170317181610752)
+
+LinkedHashMap=hashMap+双向链表
+
+也就是说对于每一个插入的entry，它的前后都与相应的节点与他相连，使用的是Pre和next，这样在便利时就能保证节点的插入顺序，但是这个顺序并不是一直不变的，会被get操作打乱，这是为了支持LRU算法而形成的。
+
+![在这里插入图片描述](assets/20200430000245372.png)
 
 #### TreeMap
 
 基于红黑树实现。
+
+#### WeakHashMap
+
+>   了解Java四种引用方式：强，软，弱，虚引用。
+
+`WeakHashMap`当除了自身有对key的引用外，此key没有其他引用那么此map会**自动丢弃此值**
+
+`WeakHashMap`的这种特性比较适合实现类似**本地、堆内缓存的存储机制**——缓存的失效依赖于GC收集器的行为
+
+在这种Map中，key的类型是`WeakReference`。如果对应的key被回收，则这个key指向的对象会被从Map容器中移除
+
+WeakHashMap继承了AbstractMap，实现Map接口。
+
+>   1.  WeakHashMap是采用拉链法实现的，每一个Entry本质上是一个单向链表
+>
+>   2.  queue保存的是“已被GC清除”的“弱引用的键”。
+>        弱引用和ReferenceQueue 是联合使用的：如果弱引用所引用的对象被垃圾回收，Java虚拟机就会把这个弱引用加入到与之关联的引用队列中
+>       private final ReferenceQueue<K> queue = new ReferenceQueue<K>();
+>
+>       
+
+源码：
+
+1.  **WeakHashMap**的Entry继承了WeakReference，也就是弱引用，所以就具有了弱引用的特点。ReferenceQueue，他的作用是GC会**清理掉对象之后，**引用对象会被放到ReferenceQueue中，故ReferenceQueue存的是将要被清除的key
+2.  WeakHashMap内部有一个expungeStaleEntries函数，在这个函数内部实现移除其内部不用的entry从而达到的自动释放内存的目的。因此我们每次访问WeakHashMap的时候，都会调用这个expungeStaleEntries函数清理一遍。这也就是为什么前两次调用WeakHashMap的size()方法有可能不一样的原因。下面看看是如何实现的：
+
+```java
+ // 清空table中无用键值对。原理如下：
+     // (01) 当WeakHashMap中某个“弱引用的key”由于没有再被引用而被GC收回时，
+     //   被回收的“该弱引用key”也被会被添加到"ReferenceQueue(queue)"中。
+     // (02) 当我们执行expungeStaleEntries时，
+     //   就遍历"ReferenceQueue(queue)"中的所有key
+    //   然后就在“WeakReference的table”中删除与“ReferenceQueue(queue)中key”对应的键值对
+     /**
+     * Expunges stale entries from the table.
+     */
+    private void expungeStaleEntries() {
+      //不断地循环清除key
+        for (Object x; (x = queue.poll()) != null; ) {
+            synchronized (queue) {//加锁
+                @SuppressWarnings("unchecked")
+                    Entry<K,V> e = (Entry<K,V>) x;
+                int i = indexFor(e.hash, table.length);//计算entry在桶的位置，
+                Entry<K,V> prev = table[i];
+                Entry<K,V> p = prev;
+              //下面就是通过遍历链表来设置值为null 来告诉垃圾回收器回收掉
+           //注意WeakHashMap 和HashMap 的数据结构都是通过数组+链表组成的，只有理解了这点才知道下面的代码做了什么
+              //找到指定的e将其删除，在将链表接上
+                while (p != null) {
+                    Entry<K,V> next = p.next;
+                    if (p == e) {
+                        if (prev == e)
+                            table[i] = next;
+                        else
+                            prev.next = next;
+                        // Must not null out e.next;
+                        // stale entries may be in use by a HashIterator
+                        e.value = null; // Help GC，找到e，value置为0帮助GC回收
+                        size--;
+                        break;
+                    }
+                    prev = p;
+                    p = next;
+                }
+            }
+        }
+    }
+```
 
 #####  Collection 和 Collections 有什么区别？
 
@@ -133,23 +202,127 @@ HashMap允许键和值是null，而Hashtable则不允许键或者值是null。
 
 Hashtable是同步的，也就是线程安全的，而HashMap不是，所以**HashMap更适用于单线程环境，Hashtable则适用于多线程环境**
 
+#### Set
+
+Set是个接口，继承自collection，iterable，
+
+> set接口下有HashSet，TreeSet
+>
+> TreeSet自动排序的set,
+>
+> **LinkedHashSet**:根据元素的hashCode值来决定元素的存储位置，但是它同时使用链表维护元素的次序
+
+##### HashSet
+
+**构造函数：**1.默认无参构造2. 带集合的构造函数3.指定HashSet初始容量和加载因子的构造函数4.指定HashSet初始容量的构造函数
+
+**来自：**实现：Set<E>, Cloneable, Serializable，继承AbstractSet
+
+hashSet构造函数会new HashMap,也就是利用hashmap的key的唯一性来实现hashset，甚至LinkedHashSet的实现也是依赖于**`LinkedHashMap`**，`new LinkedHashMap<>()`
+
+
+
+#### Queue
+
+![queue接口的实现类](assets/queue接口的实现类.png)
+
+queue继承collection,iterable,
+
+> Queue接口下有Deque(双端队列)，BlockingQueue(阻塞队列)，AbstractQueue(非阻塞队列)
+
+接口queue中的方法:
+
+>   add,offer,remove,poll,element，peek，都是抽象方法，需要子类去实现
+
+ Deque<E> extends Queue
+
+接口deque中的方法：
+
+>   除了collection，Queue接口上继承的方法，还有自己针对双链表操作的方法，addFirst，addLast，offerFirst，offerLast，removeFirst，removeLast，pollFirst，pollLast，getFirst，getLast，peekFirst，peekLast，removeFirstOccurrence，removeLastOccurrence，descendingIterator，push，pop。
+
+
+
 ##### 22.如何决定使用 HashMap 还是 TreeMap？
 
-##### 25.ArrayList 和 LinkedList 的区别是什么？
+##### 集合中为什么要用包装类？
+
+集合接受的参数是引用类型的，为了兼容，需要转为引用类型才可以正常使用
+
+##### HashMap1.7和1.8的区别是什么
+
+![img](assets/HashMap区别.png)
 
 ##### 26.如何实现数组和 List 之间的转换？
 
+数组转 List ，使用 JDK 中 java.util.Arrays 工具类的 asList 方法
+
+```java
+public static void testArray2List() {
+	String[] strs = new String[] {"aaa", "bbb", "ccc"};
+	List<String> list = Arrays.asList(strs);
+	for (String s : list) {
+		System.out.println(s);
+	}
+```
+
+List 转数组，使用 List 的toArray方法。无参toArray方法返回Object数组，传入初始化长度的数组对象，返回该对象
+
+```java
+public static void testList2Array() {
+	List<String> list = Arrays.asList("aaa", "bbb", "ccc");
+	String[] array = list.toArray(new String[list.size()]);
+	for (String s : array) {
+		System.out.println(s);
+	}
+```
+
+
+
 ##### 28.Array 和 ArrayList 有何区别？
+
+Array可以包含基本类型和对象类型，ArrayList只能包含对象类型。
+
+Array大小是固定的，ArrayList的大小是动态变化的。
+
+ArrayList提供了更多的方法和特性，比如：addAll()，removeAll()，iterator()等等。
+
+对于基本类型数据，ArrayList 使用自动装箱来减少编码工作量；而当处理固定大小的基本数据类型的时候，这种方式相对比较慢，这时候应该使用Array。
+
+
 
 ##### 29.在 Queue 中 poll()和 remove()有什么区别？
 
+1.  poll()和remove()都将**移除**并且返回对头，但是在poll()在队列为空时返回null，而remove()会抛出NoSuchElementException异常。
+2.  peek()和element()都将在**不移除**的情况下返回队头，但是peek()方法在队列为空时返回null，调用element()方法会抛出NoSuchElementException异常。
+3.  add()和offer()都是向队列中添加一个元素。但是如果想在一个满的队列中加入一个新元素，调用 add() 方法就会抛出一个 unchecked 异常，而调用 offer() 方法会返回 false。可以据此在程序中进行有效的判断！
+
 ##### 30.哪些集合类是线程安全的？
+
+vector，Hashtable,ConcurrentHashMap
 
 ##### 31.迭代器 Iterator 是什么？
 
 ##### 32.Iterator 怎么使用？有什么特点？
 
+```java
+				Iterator<String> iterator = list.iterator();
+        while (iterator.hasNext()) {
+            String str = iterator.next();
+            System.out.println(str);
+        }
+```
+
+
+
 ##### 33.Iterator 和 ListIterator 有什么区别？
+
+ListIterator 继承 Iterator，且比 Iterator 有更多方法。
+
+使用范围不同，Iterator可以迭代所有集合；ListIterator 只能用于List及其子类。
+ListIterator 有 add 方法，可以向 List 中添加对象；Iterator 不能
+ListIterator 有 set()方法，可以实现对 List 的修改；Iterator 仅能遍历，不能修改
+ListIterator 有 hasPrevious() 和 previous() 方法，可以实现逆向遍历；Iterator不能
+ListIterator 有 nextIndex() 和previousIndex() 方法，可定位当前索引的位置；Iterator不能
 
 ##### 34.怎么确保一个集合不能被修改？
 
@@ -159,14 +332,21 @@ final关键字可以修饰类，方法，成员变量，final修饰的类不能�
 
 假如我们用final关键字定义了一个map集合，这时候我们往集合里面传值，第一个键值对1,1；我们再修改后，可以把键为1的值改为100，说明我们是可以修改map集合的值的。
 
-那我们应该怎么做才能确保集合不被修改呢？
-我们可以采用Collections包下的unmodifiableMap方法，通过这个方法返回的map,是不可以修改的。他会报 java.lang.UnsupportedOperationException错。
-
-同理：Collections包也提供了对list和set集合的方法。
-Collections.unmodifiableList(List)
+那我们应该怎么做才能确保集合不被修改呢？我们可以采用**Collections包下的unmodifiableMap方法，通过这个方法返回的map,是不可以修改的**。他会报java.lang.UnsupportedOperationException错。同理：Collections包也提供了对list和set集合的方法。Collections.unmodifiableList(List)
 Collections.unmodifiableSet(Set)
 
 ##### asList的缺陷
 
 [asList](http://wiki.jikexueyuan.com/project/java-enhancement/java-thirtysix.html)
 
+asList作用是**将数组转换为List**
+
+1.  不能接受基本数据类型数组，需要转换为引用类型
+
+2.  asList 产生的列表不可操作,该内部类提供了 size、toArray、get、set、indexOf、contains 方法，而像 add、remove 等改变 list 结果的方法从 AbstractList 父类继承过来
+
+    
+
+    
+
+参考：https://github.com/h2pl/Java-Tutorial/blob/master/docs/java/collection/Java%E9%9B%86%E5%90%88%E8%AF%A6%E8%A7%A32%EF%BC%9AQueue%E5%92%8CLinkedList.md

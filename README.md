@@ -8,7 +8,7 @@ Java knowledge induction 记录所看的，所接触的，所了解的java后端
 
 ##### 第一梯队
 
-1. java基础：[java基础](./java基础/java基础.md),【更新中】[java集合框架](./java基础/java集合框架.md)
+1. java基础：[java基础](./java基础/java基础.md)***[完]***,[java集合框架](./java基础/java集合框架.md)***[完]***
 2. mysql数据库：[mysql技术内幕](./深入理解MYSQL/mysql技术内幕)，[mysql45讲](./深入理解MYSQL/mysql45讲)
 3. 计算机网络：[计算机网络](./计算机网络/网络是怎样连接的)
 4. 算法：[算法](./算法)
