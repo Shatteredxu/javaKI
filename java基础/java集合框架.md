@@ -110,13 +110,134 @@ Map常见API:
 
 由于hashMap的插入时无序的，对HashMap的迭代并不是按照其插入顺序的,所以引入了LinkedHashMap，其迭代顺序可以是插入顺序，也可以是访问顺序。因此，根据链表中元素的顺序可以将LinkedHashMap分为：**保持插入顺序的LinkedHashMap** 和 **保持访问顺序的LinkedHashMap**。
 
-![img](assets/20170317181610752)
+<img src="assets/20170317181610752" alt="img" style="zoom:80%;" />
 
 LinkedHashMap=hashMap+双向链表
 
 也就是说对于每一个插入的entry，它的前后都与相应的节点与他相连，使用的是Pre和next，这样在便利时就能保证节点的插入顺序，但是这个顺序并不是一直不变的，会被get操作打乱，这是为了支持LRU算法而形成的。
 
 ![在这里插入图片描述](assets/20200430000245372.png)
+
+***构造器：***四个HashMap的构造器+一个独有构造器（accessOrder为true指明是访问顺序，false:为插入顺序）
+
+方法：
+
+1.  containsValue(Object) 检测指定值是否在map中
+
+```java
+ // linkedHashmap 重写了此方法,但没有重写 containsKey
+ // 因为key有hash优化,而value没有,只能迭代检查. 
+ // hashmap 中node 要双循环, 这里则是单循环,所有做了重写
+	public boolean containsValue(Object value) {
+        for (LinkedHashMap.Entry<K,V> e = head; e != null; e = e.after) {
+            V v = e.value;
+            if (v == value || (value != null && value.equals(v)))
+                return true;
+        }
+        return false;
+    }
+
+    
+    
+    // hashmap的containsValue方法
+         Node<K,V>[] tab; V v;
+        if ((tab = table) != null && size > 0) {
+            for (Node<K,V> e : tab) {
+                for (; e != null; e = e.next) {
+                    if ((v = e.value) == value ||
+                        (value != null && value.equals(v)))
+                        return true;
+                }
+            }
+        }
+        return false;
+```
+
+get方法：
+
+```java
+// 需要在获取到key之后,根据设置,移动节点位置到最后(如果设置为访问顺序) 
+public V get(Object key) {
+        Node<K,V> e;
+        if ((e = getNode(hash(key), key)) == null)
+            return null;
+        if (accessOrder)//如果按照访问顺序进行排序，则afterNodeAccess
+            afterNodeAccess(e);
+        return e.value;
+    }
+```
+
+##### afterNodeAccess：
+
+```java
+// 将刚刚访问的节点移到最后
+void afterNodeAccess(Node<K,V> e) { // move node to last
+        LinkedHashMap.Entry<K,V> last;
+        if (accessOrder && (last = tail) != e) {
+            LinkedHashMap.Entry<K,V> p =
+                (LinkedHashMap.Entry<K,V>)e, b = p.before, a = p.after;
+            p.after = null;
+            if (b == null)
+                head = a;
+            else
+                b.after = a;
+            if (a != null)
+                a.before = b;
+            else
+                last = b;
+            if (last == null)
+                head = p;
+            else {
+                p.before = last;
+                last.after = p;
+            }
+            tail = p;
+            ++modCount;
+        }
+    }
+```
+
+afterNodeInsertion:在插入后的操作
+
+```java
+void afterNodeInsertion(boolean evict) { // possibly remove eldest
+    LinkedHashMap.Entry<K,V> first;
+    if (evict && (first = head) != null && removeEldestEntry(first)) {//removeEldestEntry默认一直是返回false，可以继承后重写,根据条件去移除最早的
+        K key = first.key;
+        removeNode(hash(key), key, null, false, true);
+    }
+}
+```
+
+重写了newNode方法，在新建node时将其加入链表尾部
+
+```java
+Node<K,V> newNode(int hash, K key, V value, Node<K,V> e) {
+    LinkedHashMap.Entry<K,V> p =
+        new LinkedHashMap.Entry<K,V>(hash, key, value, e);
+    linkNodeLast(p);
+    return p;
+}
+```
+
+##### afterNodeRemoval:在移除节点后的操作
+
+```java
+
+void afterNodeRemoval(Node<K,V> e) { // unlink
+    LinkedHashMap.Entry<K,V> p =
+        (LinkedHashMap.Entry<K,V>)e, b = p.before, a = p.after;
+    p.before = p.after = null;
+    if (b == null)
+        head = a;
+    else
+        b.after = a;
+    if (a == null)
+        tail = b;
+    else
+        a.before = b;
+}
+```
 
 #### TreeMap
 
