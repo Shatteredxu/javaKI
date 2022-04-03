@@ -1,5 +1,14 @@
 ## HashMap源码
 
+>   HashMap知识点：
+>
+>          1. 初始化默认长度1，负载因子
+>          2. 构造器：根据传入值初始化cap，使用tableSizeFor返回大于cap的2的幂次方
+>          3. hash方法的计算(key.hashcode ^ (key.hashcode>>>16))融合高位低位特征
+>          4. getNode函数可以知道节点有没有出现，但是通过get不能知道，因为hashmap允许key，value都为null
+>          5. put源码（1. 懒加载，没有初始化则resize初始化2. 通过hashcode得到table[i]位置元素，判断有没有等于key的值，又分为链表和红黑树的判断，如果存在元素,则更新value，不存在则执行链表或者红黑树的插入，链表插入后需要判断是否扩容，如果需要则转为红黑树）//如果table数组的长度<64,此时进行扩容操作//如果table数组的长度>64，此时进行链表转红黑树结构的操作
+>          6. resize分为两个链表进行扩容，**为什么分为两个链表，怎么推导**？
+
 [hashMap源码分析](https://blog.csdn.net/liewen_/article/details/82940272?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control)
 
 JDK1.8使用数组+链表+红黑树
@@ -11,11 +20,9 @@ JDK1.7使用数组+链表
 继承自AbstractMap，实现Map<K,V>, Cloneable, Serializable，AbstractMap也实现了Map接口，这其实是个多余的操作
 
 ```java
-DEFAULT_INITIAL_CAPACITY= 1 << 4; 默认长度 16
-
-MAXIMUM_CAPACITY  = 1 << 30最大容量
-  
-DEFAULT_LOAD_FACTOR= 0.75f  负载因子 
+DEFAULT_INITIAL_CAPACITY= 1 << 4; //默认长度 16
+MAXIMUM_CAPACITY  = 1 << 30//最大容量
+DEFAULT_LOAD_FACTOR= 0.75f  //负载因子 
 //当某一个桶中链表的长度>=8时，链表结构会转换成红黑树结构（其实还要求桶的中数量>=64,后面会提到）
 static final int TREEIFY_THRESHOLD = 8;
 //当红黑树中的节点数量<=6时，红黑树结构会转变为链表结构
@@ -53,7 +60,7 @@ HashMap(int initialCapacity)
 ```java
 //Node是HashMap的内部类对标1.7的Entry
 static class Node<K,V> implements Map.Entry<K,V> {
-        /* 新的hash = key.hashcode ^ (key.hashcode>>>16)将hashcode无符号右移得到高位的数字，再将高位数字异或进hascode中，这样就融合了整个hashcode的特征，来减少hash冲突。当我们往map中put(k,v)时，这个k,v键值对会被封装为Node，那么这个Node放在Node数组的哪个位置呢：index=hash&(n-1),n为Node数组的长度。如果直接使用hashCode&(n-1)来计算index，此时hashCode的高位随机特性完全没有用到，因为n相对于 hashcode的值很小。基于这一点，把hashcode 高16位的值通过异或混合到hashCode的低16位，由此来增强hashCode低16位的随机性 */
+        /* 新的hash = key.hashcode ^ (key.hashcode>>>16)将hashcode无符号右移得到高位的数字，再将高位数字异或进hashcode中，这样就融合了整个hashcode的特征，来减少hash冲突。当我们往map中put(k,v)时，这个k,v键值对会被封装为Node，那么这个Node放在Node数组的哪个位置呢：index=hash&(n-1),n为Node数组的长度。如果直接使用hashCode&(n-1)来计算index，此时hashCode的高位随机特性完全没有用到，因为n相对于 hashcode的值很小。基于这一点，把hashcode 高16位的值通过异或混合到hashCode的低16位，由此来增强hashCode低16位的随机性 */
         final int hash; 
         final K key;//保存map中的key
         V value;//保存map中的value
@@ -88,7 +95,7 @@ static final int hash(Object key) {
 
 ### get方法
 
-1. 通过hashcode得到在他变了数组中的位置，查看是否为空
+1. 通过hashcode得到在Hash数组中的位置，查看是否为空
 2. 不为空，如果table[index]处节点的key就是要找的key则直接返回该节点；
 3. 再分红黑树的搜索和链表的搜索
 
@@ -97,23 +104,20 @@ static final int hash(Object key) {
 //入口,返回对应的value
 public V get(Object key) {
         Node<K,V> e;
-        
-        //hash：这个函数上面分析过了。返回key混淆后的hashCode
-        //注意getNode返回的类型是Node：当返回值为null时表示map中没有对应的key，注意区分value为
-        //null：如果key对应的value为null的话，体现在getNode的返回值e.value为null，此时返回值也是
-        //null，也就是HashMap的get函数不能判断map中是否有对应的key：get返回值为null时，可能不包 
-        //含该key，也可能该key的value为null！那么如何判断map中是否包含某个key呢？见下面contains            
+        /**
+        hash：这个函数上面分析过了。返回key混淆后的hashCode
+        注意getNode返回的类型是Node：当返回值为null时表示map中没有对应的key，注意区分value为null：         如果key对应的value为null的话，体现在getNode的返回值e.value为null，此时返回值也是
+        null，也就是HashMap的get函数不能判断map中是否有对应的key：get返回值为null时，可能不包 
+        含该key，也可能该key的value为null！那么如何判断map中是否包含某个key呢？见下面contains 
+        **/
         //函数分析
         return (e = getNode(hash(key), key)) == null ? null : e.value;
     }
- 
     public boolean containsKey(Object key) {
         //注意与get函数区分，我们往map中put的所有的<key,value>都被封装在Node中，如果Node都不存在
         //显然一定不包含对应的key
         return getNode(hash(key), key) != null;
     }
- 
- 
  
   //下面分析getNode函数
   /**
@@ -131,7 +135,7 @@ public V get(Object key) {
         //链表搜索和红黑树搜索，具体红黑树的查找就不展开了，红黑树是一种弱平衡(相对于AVL)BST，
         //红黑树查找、删除、插入等操作都能够保证在O(lon(n))时间复杂度内完成，红黑树原理不在本文
         //范围内，但是大家要知道红黑树的各种操作是可以实现的，简单点可以把红黑树理解为BST，
-        //BST的查找、插入、删除等操作的实现在之前的博客中有java实现代码，实际上红黑树就是一种平            
+        //BST的查找、插入、删除等操作的实现在之前的博客中有java实现代码，实际上红黑树就是一种平       
         //衡的BST
         if ((tab = table) != null && (n = tab.length) > 0 &&
             (first = tab[(n - 1) & hash]) != null) {
@@ -207,7 +211,7 @@ public V put(K key, V value) {
                 //在遍历链表过程中先判断是key先前是否存在，如果存在则e指向该Node
                 //否则将该Node插入到链表末尾，插入后判断链表长度是否>=8，是的话要进行额外操作
                 
-                //binCountt最后的值是链表的长度
+                //binCount最后的值是链表的长度
                 for (int binCount = 0; ; ++binCount) {
                     if ((e = p.next) == null) {
                    //遍历到了链表最后一个元素,接下来执行链表的插入操作，先封装为Node再插入
@@ -220,7 +224,6 @@ public V put(K key, V value) {
                             treeifyBin(tab, hash);
                         break;
                     }
-                    
                     //当p不是指向链表末尾的时候：先判断p.key是否等于key，等于的话表示当前key
                     //已经存在了，令e指向p，停止遍历，最后会更新e的value；
                     //不等的话准备下次遍历，令p=p.next，即p=e
@@ -263,7 +266,6 @@ public V put(K key, V value) {
         return null;
     }
  
-    
     //将链表转换为红黑树结构，在链表的插入操作后调用
 /**
      * Replaces all linked nodes in bin at index for given hash unless
@@ -312,22 +314,20 @@ https://www.bilibili.com/video/BV1xv411L7vr/?spm_id_from=333.788.recommend_more_
 
 ```java
 /**
-     * 有两种情况会调用当前函数： 
-     *    1.之前说过HashMap是懒加载，第一次hHashMap的put方法的时候table还没初始化，
-     * 这个时候会执行resize，进行table数组的初始化，table数组的初始容量保存在threshold中（如果从构造器
-     * 中传入的一个初始容量的话），如果创建HashMap的时候没有指定容量，那么table数组的初始容
-     * 量是默认值：16。即，初始化table数组的时候会执行resize函数
-     *    2.扩容的时候会执行resize函数，当size的值>threshold的时候会触发扩容，即执行resize方法，
-     * 这时table数组的大小会翻倍。
-     *   注意我们每次扩容之后容量都是翻倍（*2），所以HashMap的容量一定是2的整数次幂，那么HashMap的
-     * 容量为什么一定得是2的整数次幂呢？（面试重点） 要知道原因，首先回顾我们put
-     * key的时候，每一个key会对应到一个桶里面，桶的索引是这样计算的： index = hash & (n-1)，
-     * index的计算最为直观的想法是：hash%n，即通过取余的方式把当前的key、value键值对散列到各个桶中；
-     * 那么这里为什么不用取余(%)的方式呢？原因是CPU对位运算支持较好，即位运算速度很快。
-     *   另外,当n是2的整数次幂时：hash&(n-1)与hash%(n-1)是等价的，但是两者效率来讲是不同的，位运算的效率
+      有两种情况会调用当前函数： 
+     1.之前说过HashMap是懒加载，第一次hHashMap的put方法的时候table还没初始化，
+      这个时候会执行resize，进行table数组的初始化，table数组的初始容量保存在threshold中（如果从构造器中传入的一个初始容量的话），如果创建HashMap的时候没有指定容量，那么table数组的初始容量是默认值：16。即，初始化table数组的时候会执行resize函数
+     2.扩容的时候会执行resize函数，当size的值>threshold的时候会触发扩容，即执行resize方法，
+     这时table数组的大小会翻倍。
+     注意我们每次扩容之后容量都是翻倍（*2），所以HashMap的容量一定是2的整数次幂，那么HashMap的
+     容量为什么一定得是2的整数次幂呢？（面试重点） 要知道原因，首先回顾我们put
+      key的时候，每一个key会对应到一个桶里面，桶的索引是这样计算的： index = hash & (n-1)，
+     index的计算最为直观的想法是：hash%n，即通过取余的方式把当前的key、value键值对散列到各个桶中；
+     那么这里为什么不用取余(%)的方式呢？原因是CPU对位运算支持较好，即位运算速度很快。
+     
+     另外,当n是2的整数次幂时：hash&(n-1)与hash%(n-1)是等价的，但是两者效率来讲是不同的，位运算的效率
      * 远高于%运算。基于这一点，HashMap中使用的是hash&(n-1)。这还带来了一个好处，就是将旧数组中的Node迁移到扩容后
-     * 的新数组中的时候有一个很方便的特性：HashMap使用table数组保存Node节点，所以table数组扩容的时候（数组扩容）一
-     * 定得是先重新开辟一个数组，然后把就数组中的元素重新散列到新数组中去。这里举一个例子来来说明这个特性：下面以Hash初始容量
+     * 的新数组中的时候有一个很方便的特性：HashMap使用table数组保存Node节点，所以table数组扩容的时候（数组扩容）一定得是先重新开辟一个数组，然后把就数组中的元素重新散列到新数组中去。这里举一个例子来来说明这个特性：下面以Hash初始容量
      * n=16，默认loadfactor=0.75举例（其他2的整数次幂的容量也是类似的）：默认容量：n=16，二进制：10000；n-1：15,
      * n-1二进制：01111，即一连串1。某个时刻，map中元素大于16*0.75=12，即size>12，此时我们新建了一个数组，
      * 容量为扩容前的两倍，newtab，len=32;接下来我们需要把table中的Node搬移(rehash)到newtab。从table的i=0
@@ -432,7 +432,7 @@ https://www.bilibili.com/video/BV1xv411L7vr/?spm_id_from=333.788.recommend_more_
 
 ### HashMap死循环
 
-主要针对JDK1.7，
+主要针对JDK1.7
 
 https://www.bilibili.com/video/BV1z54y1i73r?from=search&seid=6381894644036141908
 

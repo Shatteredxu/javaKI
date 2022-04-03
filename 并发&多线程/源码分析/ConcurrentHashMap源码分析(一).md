@@ -28,27 +28,21 @@ Unsafe类相当于是一个java语言中的后门类，**提供了硬件级别�
 
 ```java
 public class Test02 {
-
     public static void main(String[] args) throws Exception {
         Integer[] arr = {2,5,1,8,10};
-
         //获取Unsafe对象
         Unsafe unsafe = getUnsafe();
         //获取Integer[]的基础偏移量
         int baseOffset = unsafe.arrayBaseOffset(Integer[].class);
         //获取Integer[]中元素的偏移间隔
         int indexScale = unsafe.arrayIndexScale(Integer[].class);
-
         //获取数组中索引为2的元素对象
         Object o = unsafe.getObjectVolatile(arr, (2 * indexScale) + baseOffset);
         System.out.println(o); //1
-
         //设置数组中索引为2的元素值为100
         unsafe.putOrderedObject(arr,(2 * indexScale) + baseOffset,100);
-
         System.out.println(Arrays.toString(arr));//[2, 5, 100, 8, 10]
     }
-
     //反射获取Unsafe对象
     public static Unsafe getUnsafe() throws Exception {
         Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
@@ -169,7 +163,7 @@ public V put(K key, V value) {
     //基于key，计算hash值
     int hash = hash(key);
     //因为一个键要计算两个数组的索引，为了避免冲突，这里取高位计算Segment[]的索引
-    int j = (hash >>> segmentShift) & segmentMask;
+    int j = (hash >>> segmentShift) & segmentMask;//以hash值的最高4位作为对应的Segment数组下标j
     //判断该索引位的Segment对象是否创建，没有就创建
     if ((s = (Segment<K,V>)UNSAFE.getObject          // nonvolatile; recheck
          (segments, (j << SSHIFT) + SBASE)) == null) //  j << SSHIFT其实等于取第j个位置的元素
@@ -182,6 +176,7 @@ public V put(K key, V value) {
 ##### 1.2、ConcurrentHashMap的ensureSegment方法
 
 ```JAVA
+//当segments[k]=null时对其进行初始化。由于多个线程可
 //创建对应索引位的Segment对象，并返回
 private Segment<K,V> ensureSegment(int k) {
     final Segment<K,V>[] ss = this.segments;
@@ -202,7 +197,7 @@ private Segment<K,V> ensureSegment(int k) {
             Segment<K,V> s = new Segment<K,V>(lf, threshold, tab);
             //自旋方式，将创建的Segment对象放到Segment[]中，确保线程安全
             while ((seg = (Segment<K,V>)UNSAFE.getObjectVolatile(ss, u))
-                   == null) {
+                   == null) {//多次检查是否为null，防止多线程冲突
                 if (UNSAFE.compareAndSwapObject(ss, u, null, seg = s))
                     break;
             }
@@ -216,12 +211,14 @@ private Segment<K,V> ensureSegment(int k) {
 ##### 1.3、Segment的put方法
 
 ```java
+//上面将segments[j]被成功地初始化，下面就将元素放如segment
 final V put(K key, int hash, V value, boolean onlyIfAbsent) {
     //尝试获取锁，获取成功，node为null，代码向下执行
     //如果有其他线程占据锁对象，那么去做别的事情，而不是一直等待，提升效率
     //scanAndLockForPut 稍后分析
     HashEntry<K,V> node = tryLock() ? null :
-        scanAndLockForPut(key, hash, value);
+        scanAndLockForPut(key, hash, value);//如果拿不到锁，则执行scanAndLockForPut（）
+  //执行到这里，已经拿到锁
     V oldValue;
     try {
         HashEntry<K,V>[] tab = table;
@@ -246,7 +243,7 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
                 //如果不是重复元素，获取链表的下一个元素，继续循环遍历链表
                 e = e.next;
             }
-            else { //如果获取到的元素为空
+            else { //如果获取到的元素为空，说明没有相同的元素，则采用头插法，在头部插入一个节点
                 //当前添加的键值对的HashEntry对象已经创建
                 if (node != null)
                     node.setNext(first); //头插法关联即可
@@ -264,7 +261,7 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
                     //将当前添加的元素对象，存入数组角标位，完成头插法添加元素
                     setEntryAt(tab, index, node);
                 ++modCount;
-                count = c;
+                count = c;//segment中元素的个数
                 oldValue = null;
                 break;
             }
@@ -290,7 +287,7 @@ private HashEntry<K,V> scanAndLockForPut(K key, int hash, V value) {
     HashEntry<K,V> e = first;
     HashEntry<K,V> node = null；
     int retries = -1; // negative while locating node
-    while (!tryLock()) {
+    while (!tryLock()) {//不断自旋去获取锁
         //获取锁失败
         HashEntry<K,V> f; // to recheck first below
         if (retries < 0) {
@@ -373,6 +370,12 @@ public static void main(String[] args) throws Exception {
 
 #### 1、源码分析
 
+（1）函数的参数，也就是将要加入的最新节点。在扩容完成之后，把该节点加入新的Hash表。
+
+（2）整个数组的长度是2的整数次方，每次按二倍扩容，而hash函数就是对数组长度取模，即node.hash&sizeMask。因此，如果元素之前处于第i个位置，当再次hash时，必然处于第i个或者第i+oldCapacity个位置。
+
+（3）上面的扩容进行了一次优化，并没有对元素依次拷贝，而是先找到lastRun位置，也就是for循环。lastRun到链表末尾的所有元素，其hash值没有改变，所以不需要依次重新拷贝，只需把这部分链表链接到新链表所对应的位置就可以，也就是newTable[lastIdx]=lastRun。lastRun之前的元素则需要依次拷贝。
+
 ```java
 private void rehash(HashEntry<K,V> node) {
     HashEntry<K,V>[] oldTable = table;
@@ -401,15 +404,15 @@ private void rehash(HashEntry<K,V> node) {
                      last != null;
                      last = last.next) {
                     int k = last.hash & sizeMask;
-                    if (k != lastIdx) {
+                    if (k != lastIdx) {//寻找链表中最后一个hash值不等于lastIndex的元素
                         lastIdx = k;
                         lastRun = last;
                     }
                 }
                 //=========图一=====================
-                
+               
                 //=========图二=====================
-                newTable[lastIdx] = lastRun;
+                newTable[lastIdx] = lastRun;//把在lastRun之后之后的链表元素直接连接到hash表的lastidx位置，在lastrun之前的元素逐个拷贝
                 //=========图二=====================
                 // Clone remaining nodes
                 //=========图三=====================

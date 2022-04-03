@@ -115,15 +115,22 @@
 
 ## 3.对象的内存布局
 
-对象在堆中生成–主要三个部分（对象头（Header）、实例 数据（Instance Data）和对齐填充（Padding））
+对象在堆中生成–主要三个部分（对象头（Header）、实例数据（Instance Data）和对齐填充（Padding））
 
 - 对象头：
-	- 第一部分：存储对象自身运行时的数据，HashCode、GC分代年龄等（Mark Word）；
-	- 第二部分：类型指针，指向它的类元数据的指针，虚拟机通过这个指针来判断这个对象是哪个类的实例（HotSpot 采用的是直接指针的方式访问对象的）；
-	- 如果是个数组对象，对象头中还有一块用于记录数组长度的数据。
+
+    第一部分：存储对象自身运行时的数据，HashCode、GC分代年龄等（Mark Word）；
+
+    第二部分：类型指针，指向它的类元数据的指针，虚拟机通过这个指针来判断这个对象是哪个类的实例（HotSpot 采用的是直接指针的方式访问对象的）；
+
+    如果是个数组对象，对象头中还有一块用于记录数组长度的数据。
+
 - 实例数据：
-	- 默认分配顺序：longs/doubles、ints、shorts/chars、bytes/booleans、oops (Ordinary Object Pointers)，相同宽度的字段会被分配在一起，除了 oops，其他的长度由长到短；
-	- 默认分配顺序下，父类字段会被分配在子类字段前面。
+
+    默认分配顺序：longs/doubles、ints、shorts/chars、bytes/booleans、oops (Ordinary Object Pointers)，相同宽度的字段会被分配在一起，除了 oops，其他的长度由长到短；
+
+    - 默认分配顺序下，父类字段会被分配在子类字段前面。
+
 - 对象填充：  
     仅仅起着占位符的作用  
 

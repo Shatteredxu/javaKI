@@ -15,7 +15,7 @@ JDK NIO 的 ByteBuffer存在很多问题：
 
 可以划分为三个不同的维度：**Heap/Direct**、**Pooled/Unpooled**和**Unsafe/非 Unsafe**
 
-![image](assets/ByteBuf分类.png)
+<img src="assets/ByteBuf分类.png" alt="image" style="zoom:67%;" />
 
 **Heap/Direct 就是堆内和堆外内存**。Heap 指的是在 JVM 堆内分配，底层依赖的是字节数据；Direct 则是堆外内存，不受 JVM 限制，分配方式依赖 JDK 底层的 directByteBuffer。
 
@@ -41,3 +41,13 @@ direct内存分配
 
 PooledByteBufAllocator是通过自己取一块连续的内存进行ByteBuf的封装，同样也重写了AbstractByteBuf的<u>newDirectBuffer</u>和<u>newHeapBuffer</u>两个抽象方法
 
+### 零拷贝技术
+
+https://www.cnblogs.com/rickiyang/p/13265043.html
+
+##### Linux 中的零拷贝技术
+
+从文件中读取数据，然后将数据传输到应用程序上一共经历了四次拷贝：
+
+1.   DMA 引擎从文件中读取数据，并存储到内核态缓冲区，这里是**第一次数据拷贝**
+2.   

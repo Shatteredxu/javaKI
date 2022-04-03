@@ -9,7 +9,7 @@ java集合框架
 
 #### ArrayList
 
->   				ArrayList考点没有很多，首先extends AbstractList 并实现了List接口（第一个考点：**为什么同时继承AbstractList ，又实现List**）接着就是初始化，初始化如果有传入容量就对容量进行有效性判断，如果没有，就使用默认容量（默认：10，最小也是10）。然后它的基本方法都很简单（第二个考点：**初始化时ArrayList底层数组并没有形成，而是第一次add是创建的底层数组**），基本就是对数组进行操作，如果需要扩容（第三个点：**扩容扩多少，怎么去扩**），则生成一个新的Capacity(当然其中包括了很多判断，总之不能超过Integer.MAX_VALUE )，在进行深拷贝 System.arraycopy（第四个考点：**深拷贝**），替换到新的数组中。哦对，还有一个**fast-fail机制**。
+>   	ArrayList考点没有很多，首先extends AbstractList 并实现了List接口（第一个考点：**为什么同时继承AbstractList ，又实现List**）接着就是初始化，初始化如果有传入容量就对容量进行有效性判断，如果没有，就使用默认容量（默认：10，最小也是10）。然后它的基本方法都很简单（第二个考点：**初始化时ArrayList底层数组并没有形成，而是第一次add是创建的底层数组**），基本就是对数组进行操作，如果需要扩容（第三个点：**扩容扩多少，怎么去扩**），则生成一个新的Capacity(当然其中包括了很多判断，总之不能超过Integer.MAX_VALUE )，在进行深拷贝 System.arraycopy（第四个考点：**深拷贝**），替换到新的数组中。哦对，还有一个**fast-fail机制**。
 
 1. List接口下的一个实现，使用数组存储
 
@@ -61,6 +61,8 @@ java集合框架
 
 #### CopyOnWriteArrayList
 
+线程安全的ArrayList，很多时候，我们的系统应对的都是**读多写少**的并发场景。CopyOnWriteArrayList容器允许并发读，**读操作是无锁的，性能较高**。至于写操作，比如向容器中添加一个元素，**则首先加锁，再将将当前容器复制一份，然后在新副本上执行写操作，结束之后再将原容器的引用指向新容器。**
+
 CopyOnWriteArrayList适合使用在读操作远远大于写操作的场景里，比如缓存。
 
 缺点：
@@ -74,7 +76,7 @@ CopyOnWriteArrayList适合使用在读操作远远大于写操作的场景里，
 
 > Map接口下有HashMap（HashMap下面还有LinkedHashMap，ConcurrentHashMap，weakHashMap等等）,TreeMap, HashTable
 
-Map架构：
+#### Map架构
 
 ![img](assets/map架构.jpg)
 
@@ -103,6 +105,12 @@ Map常见API:
 >   abstract Collection<V>        values()//返回**值集**的**Collection集合**
 
 #### HashMap
+
+> hashmap考点：https://www.cnblogs.com/zengcongcong/p/11295349.html
+>
+> 1. 如何计算Hash，如何寻找key的位置
+> 2. **为什么是16？为什么必须是2的幂？如果输入值不是2的幂比如10会怎么样？**
+> 3. **谈一下当两个对象的hashCode相等时会怎么样？**
 
 查看：[HashMap源码解析](./java集合源码分析/hashMap源码.md)
 
@@ -241,7 +249,7 @@ void afterNodeRemoval(Node<K,V> e) { // unlink
 
 #### TreeMap
 
-基于红黑树实现。
+基于红黑树实现。有序Map
 
 #### WeakHashMap
 
@@ -310,6 +318,16 @@ WeakHashMap继承了AbstractMap，实现Map接口。
         }
     }
 ```
+
+（1）WeakHashMap使用（数组 + 链表）存储结构；
+
+（2）WeakHashMap中的key是弱引用，gc的时候会被清除；
+
+（3）每次对map的操作都会剔除失效key对应的Entry；
+
+（4）使用String作为key时，一定要使用new String()这样的方式声明key，才会失效，其它的基本类型的包装类型是一样的；
+
+（5）WeakHashMap常用来作为缓存使用；
 
 #####  Collection 和 Collections 有什么区别？
 
@@ -426,7 +444,7 @@ vector，Hashtable,ConcurrentHashMap
 ##### 32.Iterator 怎么使用？有什么特点？
 
 ```java
-				Iterator<String> iterator = list.iterator();
+		Iterator<String> iterator = list.iterator();
         while (iterator.hasNext()) {
             String str = iterator.next();
             System.out.println(str);

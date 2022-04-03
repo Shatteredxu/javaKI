@@ -140,48 +140,48 @@
 
 # ⽂件和⽬录操作
 
-| 常用命令                     | 作用                                      |
-| ------------------------ | --------------------------------------- |
-| cd <⽬录名>                 | 进⼊某个⽬录                                  |
-| cd ..                    | 回上级⽬录                                   |
-| cd ../..                 | 回上两级⽬录                                  |
-| cd                       | 进个⼈主⽬录                                  |
-| cd -                     | 回上⼀步所在⽬录                                |
-| pwd                      | 显示当前路径                                  |
-| ls                       | 查看⽂件⽬录列表                                |
-| ls -F                    | 查看⽬录中内容（显示是⽂件还是⽬录）                      |
-| ls -l                    | 查看⽂件和⽬录的详情列表                            |
-| ls -a                    | 查看隐藏⽂件                                  |
-| ls -lh                   | 查看⽂件和⽬录的详情列表（增强⽂件⼤⼩易读性）                 |
-| ls -lSr                  | 查看⽂件和⽬录列表（以⽂件⼤⼩升序查看）                    |
-| tree                     | 查看⽂件和⽬录的树形结构                            |
-| mkdir <⽬录名>              | 创建⽬录                                    |
-| mkdir dir1 dir2          | 同时创建两个⽬录                                |
-| mkdir -p /tmp/dir1/dir2  | 创建⽬录树                                   |
-| rm -f file1              | 删除'file1'⽂件                             |
-| rmdir dir1               | 删除'dir1'⽬录                              |
-| rm -rf dir1              | 删除'dir1'⽬录和其内容                          |
-| rm -rf dir1 dir2         | 同时删除两个⽬录及其内容                            |
-| mv old_dir new_dir       | 重命名/移动⽬录                                |
-| cp file1 file2           | 复制⽂件                                    |
-| cp dir/* .               | 复制某⽬录下的所有⽂件⾄当前⽬录                        |
-| cp -a dir1 dir2          | 复制⽬录                                    |
-| cp -a /tmp/dir1 .        | 复制⼀个⽬录⾄当前⽬录                             |
-| ln -s file1 link1        | 创建指向⽂件/⽬录的软链接                           |
-| ln file1 lnk1            | 创建指向⽂件/⽬录的物理链接                          |
-| find / -name file1       | 从跟⽬录开始搜索⽂件/⽬录                           |
-| find / -user user1       | 搜索⽤户user1的⽂件/⽬录                         |
-| find /dir -name *.bin    | 在⽬录/dir中搜带有.bin后缀的⽂件                    |
-| locate <关键词>             | 快速定位⽂件                                  |
-| locate *.mp4             | 寻找.mp4结尾的⽂件                             |
-| whereis <关键词>            | 显示某⼆进制⽂件/可执⾏⽂件的路径                       |
-| which <关键词>              | 查找系统⽬录下某的⼆进制⽂件                          |
+| 常用命令                 | 作用                                                         |
+| ------------------------ | ------------------------------------------------------------ |
+| cd <⽬录名>              | 进⼊某个目录                                                 |
+| cd ..                    | 回上级目录                                                   |
+| cd ../..                 | 回上两级⽬录                                                 |
+| cd                       | 进个⼈主⽬录                                                 |
+| cd -                     | 回上⼀步所在⽬录                                             |
+| pwd                      | 显示当前路径                                                 |
+| ls                       | 查看⽂件⽬录列表                                             |
+| ls -F                    | 查看⽬录中内容（显示是⽂件还是⽬录）                         |
+| ls -l                    | 查看⽂件和⽬录的详情列表                                     |
+| ls -a                    | 查看隐藏⽂件                                                 |
+| ls -lh                   | 查看⽂件和⽬录的详情列表（增强⽂件⼤⼩易读性）               |
+| ls -lSr                  | 查看⽂件和⽬录列表（以⽂件⼤⼩升序查看）                     |
+| tree                     | 查看⽂件和⽬录的树形结构                                     |
+| mkdir <⽬录名>           | 创建⽬录                                                     |
+| mkdir dir1 dir2          | 同时创建两个⽬录                                             |
+| mkdir -p /tmp/dir1/dir2  | 创建⽬录树                                                   |
+| rm -f file1              | 删除'file1'⽂件                                              |
+| rmdir dir1               | 删除'dir1'⽬录                                               |
+| rm -rf dir1              | 删除'dir1'⽬录和其内容                                       |
+| rm -rf dir1 dir2         | 同时删除两个⽬录及其内容                                     |
+| mv old_dir new_dir       | 重命名/移动⽬录                                              |
+| cp file1 file2           | 复制⽂件                                                     |
+| cp dir/* .               | 复制某⽬录下的所有⽂件⾄当前⽬录                             |
+| cp -a dir1 dir2          | 复制⽬录                                                     |
+| cp -a /tmp/dir1 .        | 复制⼀个⽬录⾄当前⽬录                                       |
+| ln -s file1 link1        | 创建指向⽂件/⽬录的软链接                                    |
+| ln file1 lnk1            | 创建指向⽂件/⽬录的物理链接                                  |
+| find / -name file1       | 从跟⽬录开始搜索⽂件/⽬录                                    |
+| find / -user user1       | 搜索⽤户user1的⽂件/⽬录                                     |
+| find /dir -name *.bin    | 在⽬录/dir中搜带有.bin后缀的⽂件                             |
+| locate <关键词>          | 快速定位⽂件                                                 |
+| locate *.mp4             | 寻找.mp4结尾的⽂件                                           |
+| whereis <关键词>         | 显示某⼆进制⽂件/可执⾏⽂件的路径                            |
+| which <关键词>           | 查找系统⽬录下某的⼆进制⽂件                                 |
 | chmod ugo+rwx dir1       | 设置⽬录所有者(u)、群组(g)及其他⼈(o)的读（r）写(w)执⾏(x)权限 |
-| chmod go-rwx dir1        | 移除群组(g)与其他⼈(o)对⽬录的读写执⾏权限                |
-| chown user1 file1        | 改变⽂件的所有者属性                              |
-| chown -R user1 dir1      | 改变⽬录的所有者属性                              |
-| chgrp group1 file1       | 改变⽂件群组                                  |
-| chown user1:group1 file1 | 改变⽂件的所有⼈和群组                             |
+| chmod go-rwx dir1        | 移除群组(g)与其他⼈(o)对⽬录的读写执⾏权限                   |
+| chown user1 file1        | 改变⽂件的所有者属性                                         |
+| chown -R user1 dir1      | 改变⽬录的所有者属性                                         |
+| chgrp group1 file1       | 改变⽂件群组                                                 |
+| chown user1:group1 file1 | 改变⽂件的所有⼈和群组                                       |
 
 # ⽂件查看和处理
 
@@ -238,70 +238,5 @@
 
 # RPM包管理命令
 
-| 常用命令                      | 作用               |
-| ------------------------- | ---------------- |
-| rpm -qa                   | 查看已安装的rpm包       |
-| rpm -q pkg_name           | 查询某个rpm包         |
-| rpm -q --whatprovides xxx | 显示xxx功能是由哪个包提供的  |
-| rpm -q --whatrequires xxx | 显示xxx功能被哪个程序包依赖的 |
-| rpm -q --changelog xxx    | 显示xxx包的更改记录      |
-| rpm -qi pkg_name          | 查看⼀个包的详细信息       |
-| rpm -qd pkg_name          | 查询⼀个包所提供的⽂档      |
-| rpm -qc pkg_name          | 查看已安装rpm包提供的配置⽂件 |
-| rpm -ql pkg_name          | 查看⼀个包安装了哪些⽂件     |
-| rpm -qf filename          | 查看某个⽂件属于哪个包      |
-| rpm -qR pkg_name          | 查询包的依赖关系         |
-| rpm -ivh xxx.rpm          | 安装rpm包           |
-| rpm -ivh --test xxx.rpm   | 测试安装rpm包         |
-| rpm -ivh --nodeps xxx.rpm | 安装rpm包时忽略依赖关系    |
-| rpm -e xxx                | 卸载程序包            |
-| rpm -Fvh pkg_name         | 升级确定已安装的rpm包     |
-| rpm -Uvh pkg_name         | 升级rpm包(若未安装则会安装) |
-| rpm -V pkg_name           | RPM包详细信息校验       |
-
 # YUM包管理命令
 
-| 常用命令                                | 作用          |
-| ----------------------------------- | ----------- |
-| yum repolist enabled                | 显示可⽤的源仓库    |
-| yum search pkg_name                 | 搜索软件包       |
-| yum install pkg_name                | 下载并安装软件包    |
-| yum install --downloadonly pkg_name | 只 下 载 不 安 装 |
-| yum list                            | 显示所有程序包     |
-| yum list installed                  | 查看当前系统已安装包  |
-| yum list updates                    | 查看可以更新的包列表  |
-| yum check-update                    | 查看可升级的软件包   |
-| yum update                          | 更新所有软件包     |
-| yum update pkg_name                 | 升级指定软件包     |
-| yum deplist pkg_name                | 列出软件包依赖关系   |
-| yum remove pkg_name                 | 删除软件包       |
-| yum clean all                       | 清除缓存        |
-| yum clean packages                  | 清除缓存的软件包    |
-| yum clean headers                   | 清除缓存的header |
-
-# DPKG包管理命令
-
-| 常用命令                 | 作用            |
-| -------------------- | ------------- |
-| dpkg -c xxx.deb      | 列出deb包的内容     |
-| dpkg -i xxx.deb      | 安装/更新deb包     |
-| dpkg -r pkg_name     | 移除deb包        |
-| dpkg -P pkg_name     | 移除deb包(不保留配置) |
-| dpkg -l              | 查看系统中已安装deb包  |
-| dpkg -l pkg_name     | 显示包的⼤致信息      |
-| dpkg -L pkg_name     | 查看deb包安装的⽂件   |
-| dpkg -s pkg_name     | 查看包的详细信息      |
-| dpkg –unpack xxx.deb | 解开deb包的内容     |
-
-# APT软件⼯具
-
-| 常用命令                      | 作用          |
-| ------------------------- | ----------- |
-| apt-cache search pkg_name | 搜索程序包       |
-| apt-cache show pkg_name   | 获取包的概览信息    |
-| apt-get install pkg_name  | 安装/升级软件包    |
-| apt-get purge pkg_name    | 卸载软件（包括配置）  |
-| apt-get remove pkg_name   | 卸载软件（不包括配置） |
-| apt-get update            | 更新包索引信息     |
-| apt-get upgrade           | 更新已安装软件包    |
-| apt-get clean             | 清理缓存        |

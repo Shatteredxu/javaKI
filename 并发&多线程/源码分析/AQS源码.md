@@ -1,5 +1,11 @@
 ## AQS原理
 
+https://segmentfault.com/a/1190000022918705
+
+https://juejin.cn/post/6844903997438951437
+
+>   AQS的关键点：1.AQS是什么，2.lock，没有CAS获取成功→acquire，再次获取锁，没有成功则加入队列→tryAcquire→acquireQueued(addWaiter(Node.EXCLUSIVE), arg))→addWaiter→
+
 #### AQS的几个核心关键点
 
 Java中的大部分同步类（Lock、Semaphore、ReentrantLock等）都是基于AbstractQueuedSynchronizer（简称为AQS）实现的。AQS是一种提供了原子式**管理同步状态、阻塞和唤醒线程功能**以及*队列模型*的简单框架
@@ -20,7 +26,7 @@ transient关键字只能修饰变量，而不能修饰方法和类，一个静�
 
 ReentrantLock有sync内部类，sync实现的AbstractQueuedSynchronizer抽象类，然后如果是非公平锁NonfairSync继承sync ，实现其lock方法
 
-1.lock
+##### 1.lock
 
 ```java
 final void lock() {
@@ -32,7 +38,7 @@ final void lock() {
 }
 ```
 
-2.acquire
+##### 2.acquire
 
 进入acquire方法，首先会再次获取锁tryAcquire，成功则跳出，不执行if，失败则执行acquireQueued中的逻辑
 
@@ -44,7 +50,7 @@ public final void acquire(int arg) {
 }
 ```
 
-3.tryacquire
+##### 3.tryacquire
 
 对于tryacquire方法
 
@@ -63,7 +69,7 @@ final boolean nonfairTryAcquire(int acquires) {//acquires传入为1
             return true;
         }
     }
-    else if (current == getExclusiveOwnerThread()) {//查看当前线程是否已经占用
+    else if (current == getExclusiveOwnerThread()) {//查看当前线程是否已经占用，
         int nextc = c + acquires;
         if (nextc < 0) // overflow
             throw new Error("Maximum lock count exceeded");
@@ -74,7 +80,7 @@ final boolean nonfairTryAcquire(int acquires) {//acquires传入为1
 }
 ```
 
-4.addWaiter
+##### 4.addWaiter(添加Node节点到队列中)
 
 一般如果资源没有被使用者，tryacquire就会获取资源，否则执行addWaiter(Node.EXCLUSIVE)方法，
 
@@ -115,14 +121,14 @@ private Node enq(final Node node) {
 }
 ```
 
-5.acquireQueued 
+##### 5. acquireQueued
 
 ```java
 //阻塞队列不断查看资源状态，并提供出队方法
 final boolean acquireQueued(final Node node, int arg) {
     boolean failed = true;
     try {
-        boolean interrupted = false;
+        boolean interrupted = false;//标记等待过程中是否被中断过
         for (;;) {//自旋，或者说死循环
             final Node p = node.predecessor();
             if (p == head && tryAcquire(arg)) {//判断前驱节点是不是头节点，第一次为true，再次获取锁成功就更改队列头节点，失败跳出if，执行shouldParkAfterFailedAcquire，然后再次自旋，直到获取到锁
@@ -156,16 +162,18 @@ private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
         /*
          * Predecessor was cancelled. Skip over predecessors and
          * indicate retry.
+          前一节点已被取消，跳过，再向前找节点
          */
         do {
             node.prev = pred = pred.prev;
-        } while (pred.waitStatus > 0);
+        } while (pred.waitStatus > 0);//向前找到waitStatus不>0的节点
         pred.next = node;
     } else {
         /*
          * waitStatus must be 0 or PROPAGATE.  Indicate that we
          * need a signal, but don't park yet.  Caller will need to
          * retry to make sure it cannot acquire before parking.
+         CAS 设置前一节点等待唤醒
          */
         compareAndSetWaitStatus(pred, ws, Node.SIGNAL);//将状态改为-1
     }
@@ -173,3 +181,14 @@ private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
 }
 ```
 
+```java
+private final boolean parkAndCheckInterrupt() {
+    // 阻塞线程
+    LockSupport.park(this);
+    return Thread.interrupted();
+}
+```
+
+>   1、通过 acquireQueued 将当前节点加入队尾，并设置阻塞。自旋，判断如果当前节点的前驱节点。是头结点（head 节点不排队，只记录状态，head 的后驱节点才是真正第一个排队的），则再次尝试 tryAcquire() 获取锁。 2、可以看到自旋的跳出条件是当前节点是队列中第一个，并且获取锁。 3、如果一直自旋，则会消耗 CPU 资源，因此使用 shouldParkAfterFailedAcquire 判断是否需要将当前线程阻塞，如果是则通过 parkAndCheckInterrupt 阻塞线程的运行。 4、LockSupport.park() 是通过 native 方法 UNSAFE.park() 实现的线程阻塞。
+
+<img src="assets/de1a8e77dc054e5ca037a1e0be40f5eetplv-k3u1fbpfcp-watermark.awebp" alt="image.png" style="zoom:70%;" />
