@@ -27,9 +27,7 @@ Redis集群方案
 
 优缺点：**优点：**基于主从复制，保证并且读写分离，master能够自动切换；**缺点**：slave节点作为备份节点不提供服务，浪费机器；难以在线扩容
 
-### Redis-Cluster模式
-
-
+### 3. Redis-Cluster模式
 
 [redis集群](./Redis的设计与实现\Redis集群.md)
 
@@ -52,11 +50,72 @@ Redis集群方案
 
 **缺点：**不保证数据的强一致性，slave充当“冷备”，不能缓解读压力，只支持多key在同一节点的事务操作，多key分布不同节点时无法使用事务功能
 
+
+
+### 4.Codis集群
+
+使用go语言开发，解决可Twemproxy扩缩容的问题，并且兼容Twemproxy，
+
+codis集群中包含了4类关键组件。
+
+*   codis server：这是进行了二次开发的Redis实例，其中增加了额外的数据结构，支持数据迁移操作，主要负责处理具体的数据读写请求。
+
+*   codis proxy：接收客户端请求，并把请求转发给codis server。
+
+*   Zookeeper/etcd集群：保存集群元数据，例如数据槽的位置信息和codis proxy信息。当`Codis Dashbord` 改变槽位的信息的时候，其他的`Codis`节点会监听到`ZooKeeper`的槽位变化，会及时同步过来
+
+*   codis dashboard和codis fe：共同组成了集群管理工具。其中，codis dashboard负责执行集群管理工作，包括增删codis server、codis proxy和进行数据迁移。而codis fe负责提供dashboard的Web操作界面，便于我们直接在Web界面上进行集群管理。
+
+    <img src="assets/c726e3c5477558fa1dba13c6ae8a77a5.jpg" alt="img" style="zoom:27%;" />
+
+    ##### 集群数据如何分布
+
+    1.   Codis集群一共有1024个Slot，编号依次是0到1023，手动均匀分布在server上；
+    2.   当客户端要读写数据时，会使用CRC32算法计算数据key的哈希值，并把这个哈希值对1024取模。而取模后的值，则对应Slot的编号。此时，根据第一步分配的Slot和server对应关系，我们就可以知道数据保存在哪个server上了。（每个机器上都保存的有，和Redis-cluter一致）
+    2.   `Codis` 会在机器空闲的时候，观察`Redis`中的实例对应着的`slot`数，如果不平衡的话就会自动进行迁移
+    
+    ##### 集群如何扩容
+    
+    Codis集群扩容包括了两方面：增加**codis server**和增加**codis proxy。**
+    
+    Codis集群按照Slot的粒度进行数据迁移，我们来看下迁移的基本流程。
+    
+    1.  在源server上，Codis从要迁移的Slot中随机选择一个数据，发送给目的server。
+    2.  目的server确认收到数据后，会给源server返回确认消息。这时，源server会在本地将刚才迁移的数据删除。
+    3.  第一步和第二步就是单个数据的迁移过程。Codis会不断重复这个迁移过程，直到要迁移的Slot中的数据全部迁移完成。
+    
+    Codis实现了两种迁移模式，分别是<u>同步迁移和异步迁移</u>
+    
+    <u>同步迁移</u>：在数据从源server发送给目的server的过程中，源server是阻塞的，无法处理新的请求操作。这种模式很容易实现，但是迁移过程中会涉及多个操作（包括数据在源server序列化、网络传输、在目的server反序列化，以及在源server删除），如果迁移的数据是一个bigkey，源server就会阻塞较长时间，无法及时处理用户请求。
+    
+    <u>异步迁移：</u>
+    
+    1.   当源server把数据发送给目的server后，就可以处理其他请求操作了，不用等到目的server的命令执行完。而目的server会在收到数据并反序列化保存到本地后，给源server发送一个ACK消息，表明迁移完成。此时，源server在本地把刚才迁移的数据删除。迁移的数据会被设置为**只读**
+    
+    2.   对于bigkey，异步迁移采用了拆分指令（一万个数据需要迁移，则传输一万条push命令进行迁移）的方式进行迁移，避免了bigkey迁移时，因为要序列化大量数据而阻塞源server的问题
+    
+    而codis proxy的迁移则可以直接添加进去，并且通过Zookeeper来保证高可用。
+    
+    ##### 怎么保证集群可靠性？
+    
+    <img src="assets/0282beb10f5c42c1f12c89afbe03af4a.jpg" alt="img" style="zoom:30%;" />
+    
+    ##### 切片集群方案选择建议
+    
+    <img src="assets/8fec8c2f76e32647d055ae6ed8cfbab8.jpg" alt="img" style="zoom:37%;" />
+    
+    ##### 如何进行选择
+    
+    1.  从稳定性和成熟度来看，Codis应用得比较早，在业界已经有了成熟的生产部署。虽然引入了proxy和Zookeeper，增加了集群复杂度，但是也给Codis的稳定使用提供了保证。而Redis Cluster相对来说，成熟度要弱于Codis，如果你想选择一个成熟稳定的方案，Codis更加合适些。
+    2.  从业务应用客户端兼容性来看，连接单实例的客户端可以直接连接codis proxy，而原本连接单实例的客户端要想连接Redis Cluster的话，就需要开发新功能。所以，如果你的业务应用中大量使用了单实例的客户端，而现在想应用切片集群的话，建议你选择Codis，这样可以避免修改业务应用中的客户端。
+    3.  从使用Redis新命令和新特性来看，Codis server是基于开源的Redis 3.2.8开发的，所以，Codis并不支持Redis后续的开源版本中的新增命令和数据类型。另外，Codis并没有实现开源Redis版本的所有命令，比如BITOP、BLPOP、BRPOP，以及和与事务相关的MUTLI、EXEC等命令。[Codis官网](https://github.com/CodisLabs/codis/blob/release3.2/doc/unsupported_cmds.md)上列出了不被支持的命令列表，你在使用时记得去核查一下。所以，如果你<u>想使用开源Redis 版本的新特性，Redis Cluster是一个合适的选择。</u>
+    4.  从数据迁移性能维度来看，Codis能支持异步迁移，异步迁移对集群处理正常请求的性能影响要比使用同步迁移的小。所以，如果你在应用集群时，数据迁移比较频繁的话，Codis是个更合适的选择。
+
 ### Gossip协议
 
 [详解](http://learn.lianglianglee.com/%E4%B8%93%E6%A0%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%AD%E9%97%B4%E4%BB%B6%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF%EF%BC%88%E5%AE%8C%EF%BC%89/04%20%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E5%8D%8F%E8%AE%AE%20Gossip%20%E5%92%8C%20Redis%20%E9%9B%86%E7%BE%A4%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90.md)
 
-在分布式系统中，需要提供维护节点元数据信息的机制，所谓元数据是指节点负责哪些数据、主从属性、是否出现故障等状态信息。常见的元数据维护方式分为集中式和无中心式。Redis Cluster 采用 Gossip 协议实现了无中心式。Redis Cluster 中使用 Gossip 主要有两大作用：**1. 去中心化，以实现分布式和弹性扩展；2.失败检测，以实现高可用；**
+在分布式系统中，需要提供维护节点元数据信息的机制，所谓**元数据**是指节点负责哪些数据、主从属性、是否出现故障等状态信息。常见的元数据维护方式分为集中式和无中心式。Redis Cluster 采用 Gossip 协议实现了无中心式。Redis Cluster 中使用 Gossip 主要有两大作用：**1. 去中心化，以实现分布式和弹性扩展；2.失败检测，以实现高可用；**
 
 ##### ***通信机制：***
 
@@ -97,6 +156,12 @@ Gossip 消息种类：Ping 消息、Pong 消息、Meet 消息、Fail 消息
      >
      >   基于Raft选举算法
      >
-     >   1.   **从节点拉票**，
-
+     >   1.   **从节点拉票**，当从节点发现自己复制的主节点状态为已下线时，从节点就会向集群广播一条请求消息，请求所有收到这条消息并且具有投票权的主节点给自己投票，但是并非立即进行投票，而是通过`mstime() + 500ms + random()%500ms + rank*1000ms`等待一段时间，rank是从节点的排名，排名越靠前，则等待时间越短
+     >   1.   主节点进行投票，N个主节点，当从节点收到的票数大于 N/2 + 1，则可以升级为主节点。
+     >   1.   **选举失败**,如果没有获得超过半数的主节点投票。集群将会进入下一轮选举，直到选出新的主节点为止
+     
      Redis Cluster 模式下，**16384个 Slot 中只要有任意一个 Slot 不可用，整个集群都将不可用**，换言之，任何一个被指派 Slot 的主节点故障，在其恢复期间，集群都是不可用的。鉴于此，Redis Cluster 并不适合超大规模商用场景，国内 IT 巨头基本上采用的都是自研的集群方案，如阿里云 ApsaraDB for Redis/ApsaraCache，腾讯的 CRS。当然，Redis Cluster 也有很成功的商用案例，像亚马逊采用的就是 Redis Cluster。
+     
+     ##### 问题
+     
+     >   1.   codis与rediscluster的区别

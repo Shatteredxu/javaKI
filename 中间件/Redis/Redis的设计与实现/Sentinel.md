@@ -18,6 +18,10 @@ Redis高可用解决方案：由一个或多个Sentinel实例（instance）组�
 
 初始化主服务器状态，创建连向主服务器的网络连接一共两个连接：命令连接，订阅连接
 
+❑一个是命令连接，这个连接专门用于向主服务器发送命令，并接收命令回复。
+
+❑另一个是订阅连接，这个连接专门用于订阅主服务器的__sentinel__:hello频道。
+
 ### 获取主服务器信息
 
 Sentinel默认会以<u>每十秒一次的频率</u>，通过命令连接向被监视的主服务器发送INFO命令，并通过分析INFO命令的回复来获取主服务器的当前信息。、
@@ -38,11 +42,15 @@ Sentinel默认会以<u>每十秒一次的频率</u>，通过命令连接向被�
 
 Sentinel既通过命令连接向服务器的__sentinel__:hello频道发送信息，又通过订阅连接从服务器的__sentinel__:hello频道接收信息。
 
+
+
 对于监视同一个服务器的多个Sentinel来说，一个Sentinel发送的信息会被其他Sentinel接收到，这些信息会被用于更新其他Sentinel对发送信息Sentinel的认知，也会被用于更新其他Sentinel对被监视服务器的认知。
 
 当Sentinel通过频道信息发现一个新的Sentinel时，它不仅会为新Sentinel在sentinels字典中创建相应的实例结构，还会创建一个连向新Sentinel的命令连接，而新Sentinel也同样会创建连向这个Sentinel的命令连接，最终监视同一主服务器的多个Sentinel将形成相互连接的网络
 
 Sentinel在连接主服务器或者从服务器时，**会同时创建命令连接和订阅连接**，但是在连接其他Sentinel时，**却只会创建命令连接**，而不创建订阅连接。这是因为Sentinel需要通过接收主服务器或者从服务器发来的频道信息来发现未知的新Sentinel，所以才需要建立订阅连接，而相互已知的Sentinel只要使用命令连接来进行通信就足够了。
+
+假设现在有sentinel1、sentinel2、sentinel3三个Sentinel在监视同一个服务器，那么当sentinel1向服务器的__sentinel__:hello频道发送一条信息时，所有订阅了__sentinel__:hello频道的Sentinel（包括sentinel1自己在内）都会收到这条信息
 
 ### 检测主观下线状态
 
@@ -57,6 +65,8 @@ Sentinel配置文件中的down-after-milliseconds选项指定了Sentinel判断�
 ### 选举领头Sentinel
 
 Raft选举算法
+
+确定住服务器进入客观下线后，每个sentinel都会要求其他sentinel将自己设为领头，投票原则讲究先到先得，先得到半数以上的则为领头。
 
 ### 故障转移
 
@@ -74,3 +84,16 @@ Raft选举算法
 
 3.删除所有与已下线主服务器连接断开超过down-after-milliseconds*10毫秒的从服务器 4.之后再根据服务器优先级，数据的复制偏移量
 
+
+
+问题：
+
+>   1.   怎么选择出领头的sentinel
+>
+>   2.   命令连接和订阅连接分别是什么作用，怎么用的
+>
+>        >   命令连接用于sentinel之间，或者与服务器之间信息交换，获取主从服务器信息等
+>        >
+>        >   订阅连接存在sentinel与主从服务器之间，多个sentinel订阅服务器频道，有sentinel给这个服务器发送信息可以被其他的sentinel收到，这个可以用于sentinel之间的节点发现
+>
+>        
